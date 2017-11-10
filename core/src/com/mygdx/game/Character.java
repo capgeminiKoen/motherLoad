@@ -80,6 +80,7 @@ public class Character extends Rectangle{
     // Moves the character until there is a collision
     // Input: distance to travel (already corrected for the time)
     private void moveUntilCollisionHorizontal(float amount){
+        // TODO
         if(amount == 0) return;
         if(amount < 0){
             if(Manager.map.isNewBlockColumnHorizontal(x, x + amount)) {
@@ -98,7 +99,10 @@ public class Character extends Rectangle{
                     x = limit;
                     // Set current X speed to 0
                     currentMovementSpeed.x = 0;
-
+                    System.out.println("Limit reached. Found block at " + block.x + "," + block.y);
+                }
+                else{
+                    x += amount; // MOVE
                 }
             }
             else{
@@ -130,9 +134,9 @@ public class Character extends Rectangle{
             grounded = false;
         }
 
-        if(x + width > Manager.screenSize.x){
+        if(x + width > Manager.map.pixelWidth){
             currentMovementSpeed.x = 0;
-            x = Manager.screenSize.x - width;
+            x = Manager.map.pixelWidth - width;
         }
         if(x < 0){
             currentMovementSpeed.x = 0;

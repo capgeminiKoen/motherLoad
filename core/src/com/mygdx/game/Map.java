@@ -3,27 +3,41 @@ package com.mygdx.game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.Utility.Utility;
 
 public class Map {
 
     int height, width;
     int blockSize = 64;
+    int pixelWidth;
+    private int fillFromLevel;
     Block[][] blocks;
 
-    public Map(int newHeight, int newWidth) {
+    public Map(int newHeight, int newWidth, int fillMapFromLayer) {
+        fillFromLevel = fillMapFromLayer;
         blocks = new Block[newHeight][newWidth];
         height = newHeight;
         width = newWidth;
+        pixelWidth = width * blockSize;
         initializeBlocks();
+    }
+
+    public Coordinate getHorizontalMapBounds(){
+        return new Coordinate(0, pixelWidth);
     }
 
     private void initializeBlocks() {
         // For now, lets make all blocks normal at the start.
         // TODO
         // In the future, some have to be different types, as well as empty, etc.
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < height - fillFromLevel; i++) {
             for (int j = 0; j < width; j++) {
                 blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize);
+            }
+        }
+        for(int i = height - fillFromLevel; i < height; i++){
+            for (int j = 0; j < width; j++) {
+                blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize);
             }
         }
     }
@@ -33,11 +47,11 @@ public class Map {
         int blockx = x / blockSize;
         int blocky = y / blockSize;
         // Clamp bottom
-        if (blockx < 0) blockx = 0;
-        if (blocky < 0) blocky = 0;
+        if (blockx < 0) blockx = Utility.NOT_FOUND;
+        if (blocky < 0) blocky = Utility.NOT_FOUND;
         // Clamp top
-        if (blockx >= width) blockx = width - 1;
-        if (blocky >= height) blocky = height - 1;
+        if (blockx >= width) blockx = Utility.NOT_FOUND;
+        if (blocky >= height) blocky = Utility.NOT_FOUND;
         // Retrieve Rect
         return new Coordinate(blockx, blocky);
     }
@@ -51,6 +65,8 @@ public class Map {
     }
 
     public Block getBlockByIndex(int x, int y) {
+        if(x == Utility.NOT_FOUND || y == Utility.NOT_FOUND)
+            return null;
         return blocks[y][x];
     }
 
@@ -103,9 +119,8 @@ public class Map {
 
     // Get the block y index based on the world y pos
     public int worldToBlockIndexVertical(int yPos_world) {
+        // NO CAPS ON Y POS!!! :)
         int index = yPos_world / blockSize;
-        if (index < 0) index = 0;
-        if (index >= height) index = height - 1;
         return index;
     }
 
