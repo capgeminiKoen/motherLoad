@@ -20,19 +20,20 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
+		map = new Map(1, 2);
+		Manager.map = map;
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, gameWidth, gameHeight);
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
 		character = new Character();
-		character.x = gameWidth/2 - 64/2;
-		character.y = 300;
+		character.x = gameWidth/2 - 64/2 + 100;
+		character.y = 20;
 		character.height = 40;
 		character.width = 99;
 		Manager.screenSize.x = gameWidth;
 		Manager.screenSize.y = gameHeight;
 		character.texture = new Texture("heli.gif");
-		map = new Map(4, 7);
 	}
 
 	@Override

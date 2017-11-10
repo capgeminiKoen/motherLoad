@@ -77,7 +77,41 @@ public class Character extends Rectangle{
         }
     }
 
-    public boolean moveUntillCollision(float amount, Direction direction){
+    // Moves the character until there is a collision
+    // Input: distance to travel (already corrected for the time)
+    private void moveUntilCollisionHorizontal(float amount){
+        if(amount == 0) return;
+        if(amount < 0){
+            if(Manager.map.isNewBlockColumnHorizontal(x, x + amount)) {
+
+                // TODO: FIND OUT WHAT COLUMN IT IS, AND CHECK FROM TOP -> BOT!!
+                // Get column
+                Coordinate coords_up = Manager.map.getBlockIndexByCoords(new Vector2(x + amount, y + height));
+                Coordinate coords_down = Manager.map.getBlockIndexByCoords(new Vector2(x + amount, y));
+                if(Manager.map.containsBlock(coords_down, coords_up)){
+                    // Calculate collisionpoint
+                    Block block = Manager.map.getBlockByIndex(coords_down);
+                    block.blockType = BlockType.Cracked;
+                    // Maximum travel distance is until we hit the block, so the very right of it. (+1 buffer)
+                    float limit = block.x + block.width + 1;
+                    // Set x to the limit (otherwise we'd have passed it)
+                    x = limit;
+                    // Set current X speed to 0
+                    currentMovementSpeed.x = 0;
+
+                }
+            }
+            else{
+                x += amount; // J
+            }
+        }
+        else{
+            // RIGHT
+            x += currentMovementSpeed.x * Gdx.graphics.getDeltaTime();
+        }
+    }
+
+    private boolean moveUntillCollision(){
         // If we are moving up, we are only colliding up.
         // If our length > blockSize, we can collide with max length/blockSize + 2 blocks.
         // The transition states are most important. We are hovering on blocks, and have to check the next ones.
@@ -85,14 +119,7 @@ public class Character extends Rectangle{
         //  get left upper corner of current position, pass it to the map and get corresponding block.
         //  get right upper corner of current position, pass it to the map and get corresponding block.
         //  check whether there is ANY block in between those two. if so; limit movement till those two.
-        switch (direction){
-            case Left:
-                // Get upper left corner
-                Vector2 upperLeftCorner = new Vector2(this.x, this.y + height);
-                Vector2 lowerLeftCorner = new Vector2(this.x, this.y + height);
-                Manager.map.getBlockByCoords(upperLeftCorner);
-        }
-//        Rectangle x = Manager.map.getBlockByCoords();
+        moveUntilCollisionHorizontal(currentMovementSpeed.x * Gdx.graphics.getDeltaTime());
         return false;
     }
 
@@ -164,7 +191,7 @@ public class Character extends Rectangle{
             accelerate(Direction.Down);
         }
         // Move
-        move();
+        moveUntillCollision();
         // Apply gravity
         applyGravity();
     }

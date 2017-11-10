@@ -18,7 +18,13 @@ public class Block extends Rectangle{
         height = blockSize;
     }
 
+    public boolean isEmpty(){
+        // Checks if there is no block
+        return blockType == BlockType.Empty;
+    }
+
     public void draw(SpriteBatch batch){
+        if(isEmpty()) return;
         batch.draw(blockType.blockTexture, x, y, width, height);
     }
 
@@ -29,6 +35,9 @@ public class Block extends Rectangle{
         }
         if(blockType == BlockType.Cracked && health < severeCrackLevel){
             blockType = BlockType.CrackedSevere;
+        }
+        if(health <= 0 && blockType != BlockType.Empty){
+            blockType = BlockType.Empty;
         }
     }
 }
