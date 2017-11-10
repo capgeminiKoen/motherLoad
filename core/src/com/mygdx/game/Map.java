@@ -90,8 +90,8 @@ public class Map {
 
     // Determine if player transitions to new block column
     public boolean isNewBlockColumnHorizontal(float x_now, float x_next) {
-        int x_now_int = Math.round(x_now);
-        int x_next_int = Math.round(x_next);
+        int x_now_int = Math.round((x_now < x_next) ? x_now : x_next);
+        int x_next_int = Math.round((x_next > x_now) ? x_next : x_now);
         // Get ingame coordinates
         int currentXCoordinate = worldToBlockIndexHorizontal(x_now_int);
         int nextXCoordinate = worldToBlockIndexHorizontal(x_next_int);
