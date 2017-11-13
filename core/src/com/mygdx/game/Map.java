@@ -4,26 +4,33 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Utility.Utility;
+import com.mygdx.game.inventory.resources.Resource;
 
 public class Map {
 
     int height, width;
-    int blockSize = 64;
-    int pixelWidth;
+    int blockSize;
+    int pixelWidth, pixelHeight;
     private int fillFromLevel;
     Block[][] blocks;
 
-    public Map(int newHeight, int newWidth, int fillMapFromLayer) {
+    public Map(int newHeight, int newWidth, int fillMapFromLayer, int blockSize) {
+        this.blockSize = blockSize;
         fillFromLevel = fillMapFromLayer;
         blocks = new Block[newHeight][newWidth];
         height = newHeight;
         width = newWidth;
         pixelWidth = width * blockSize;
+        pixelHeight = height * blockSize;
         initializeBlocks();
+        blocks[0][4].setResource(Resource.Gold);
     }
 
     public Coordinate getHorizontalMapBounds(){
         return new Coordinate(0, pixelWidth);
+    }
+    public Coordinate getVerticalMapBounds(){
+        return new Coordinate(0,pixelHeight);
     }
 
     private void initializeBlocks() {
@@ -75,13 +82,29 @@ public class Map {
         // Loops through the blocks and returns true if one is true.
         int i_start = block1.x, i_end = block2.x;
         int j_start = block1.y, j_end = block2.y;
+        // fix for the NOT_FOUND index
+        if((i_start == Utility.NOT_FOUND && i_end == Utility.NOT_FOUND) || (j_start == Utility.NOT_FOUND && j_end == Utility.NOT_FOUND))
+            return false;
+
+        // left/lower bounds
+        if(i_start == Utility.NOT_FOUND)
+            i_start = 0;
+        if(j_start == Utility.NOT_FOUND)
+            j_start = 0;
+
+        // right/upper bounds
+        if(i_end == Utility.NOT_FOUND)
+            i_end = height-1;
+        if(j_end == Utility.NOT_FOUND)
+            j_end = height-1;
+
         // Loop from istart to iend, INCLUSIVE!
         // If we have coords [1,3] and [1,5] we will evaluate the following blocks:
         // [1,3], [1,4] and [1,5]. If any of these contain obstacles, return true.
         for (int i = i_start; i <= i_end; i++) {
             for (int j = j_start; j <= j_end; j++) {
                 // If a block is found, return true.
-                if (blocks[j][i].blockType != BlockType.Empty)
+                if (j != -1 && i != -1 && blocks[j][i].blockType != BlockType.Empty)
                     return true;
             }
         }
@@ -99,9 +122,9 @@ public class Map {
     }
 
     // Determine if player transitions to new block row
-    public boolean isNewBlockColumnVertical(int y_now, int y_next) {
-        int y_now_int = Math.round(y_now);
-        int y_next_int = Math.round(y_next);
+    public boolean isNewBlockColumnVertical(float y_now, float y_next) {
+        int y_now_int = Math.round((y_now < y_next) ? y_now : y_next);
+        int y_next_int = Math.round((y_next > y_now) ? y_next : y_now);
         // Get ingame coordinates
         int currentYCoordinate = worldToBlockIndexVertical(y_now_int);
         int nextYCoordinate = worldToBlockIndexVertical(y_next_int);

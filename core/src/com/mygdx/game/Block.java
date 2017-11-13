@@ -2,10 +2,13 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.game.inventory.resources.Resource;
+import com.sun.org.apache.regexp.internal.RE;
 
 public class Block extends Rectangle{
 
     BlockType blockType;
+    Resource resource = Resource.None;
     float health;
     float crackLevel = 60, severeCrackLevel = 30;
 
@@ -26,9 +29,16 @@ public class Block extends Rectangle{
     public void draw(SpriteBatch batch){
         if(isEmpty()) return;
         batch.draw(blockType.blockTexture, x, y, width, height);
+        if(resource != Resource.None){
+            batch.draw(resource.texture, x, y, width, height);
+        }
     }
 
-    public void damage(float damage){
+    public void setResource(Resource resource){
+        this.resource = resource;
+    }
+
+    public boolean damage(float damage){
         health -= damage;
         if(blockType == BlockType.Normal && health < crackLevel){
             blockType = BlockType.Cracked;
@@ -38,6 +48,8 @@ public class Block extends Rectangle{
         }
         if(health <= 0 && blockType != BlockType.Empty){
             blockType = BlockType.Empty;
+            return true;
         }
+        return false;
     }
 }

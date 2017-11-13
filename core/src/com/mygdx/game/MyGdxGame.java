@@ -13,7 +13,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int gameWidth = 800;
 	private int gameHeight = 480;
 	private SpriteBatch batch;
-	Texture img;
 	private OrthographicCamera camera;
 	private Character character;
 	private Map map;
@@ -21,25 +20,27 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
-		map = new Map(2, 15, 1);
-        map.blocks[0][0].blockType = BlockType.Empty;
-        map.blocks[0][1].blockType = BlockType.Empty;
-        map.blocks[0][2].blockType = BlockType.Empty;
-        map.blocks[0][3].blockType = BlockType.Empty;
+	    // Create new map
+		map = new Map(10, 15, 1, 100);
+		// Add ref to manager
 		Manager.map = map;
+		// New camera
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, gameWidth, gameHeight);
+		// Spritebatch
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.projection);
-		img = new Texture("badlogic.jpg");
-		character = new Character();
-		character.x = 10;
-		character.y = 5;
+		// Create new character
+		character = new Character("heli.gif");
+		// Get map bounds;
+        Coordinate map_hor = map.getHorizontalMapBounds(), map_vert = map.getVerticalMapBounds();
+		character.y = map_vert.y;
+		character.x = map_hor.y / 2;
 		character.height = 40;
 		character.width = 99;
+		// Save screensize
 		Manager.screenSize.x = gameWidth;
 		Manager.screenSize.y = gameHeight;
-		character.texture = new Texture("heli.gif");
 	}
 
 	@Override
@@ -83,6 +84,5 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
 	}
 }

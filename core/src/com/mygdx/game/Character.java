@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Utility.Utility;
+import com.mygdx.game.inventory.Inventory;
+import com.mygdx.game.inventory.resources.Resource;
 
 public class Character extends Rectangle {
 
@@ -15,17 +17,19 @@ public class Character extends Rectangle {
     private float maximumMovementSpeed = 1000;
     public float accelerationSpeed = 500;
     public float dampenSpeedAir = 100, dampenSpeedGround = 400;
-    public Texture texture;
+    private Texture texture;
     private boolean flip = false;
     private boolean grounded = false;
+    private Inventory inventory;
 
 
     public void draw(SpriteBatch batch) {
         batch.draw(texture, flip ? x + width : x, y, flip ? -width : width, height);
     }
 
-    public Character() {
-
+    public Character(String texturePath) {
+         texture = new Texture(texturePath);
+         inventory = new Inventory();
     }
 
     public void accelerate(Direction direction) {
@@ -96,6 +100,7 @@ public class Character extends Rectangle {
             currentMovementSpeed.x = 0;
         }
 
+        // Check for collision with blocks
         boolean movingLeft = amount < 0;
         // Note: Calculate the reference point for collision. moving right > right, moving left > left.
         float reference_x = (movingLeft) ? x : x + width;
@@ -107,7 +112,10 @@ public class Character extends Rectangle {
             if (Manager.map.containsBlock(coords_down, coords_up)) {
                 // Calculate collisionpoint
                 Block block = Manager.map.getBlockByIndex(coords_down);
-                block.damage(15);
+                // When we found a block and we are grounded, drill it :)
+                if(grounded && block != null){
+                    drill(block);
+                }
 
                 // Maximum travel distance is until we hit the block, so the very edge of it. (+1 buffer)
                 float limit;
@@ -126,7 +134,57 @@ public class Character extends Rectangle {
         } else {
             x += amount; // J
         }
+    }
 
+    // Start drilling a block (:
+    private void drill(Block block){
+        if(block.damage(10)){
+            if(block.resource != Resource.None){
+
+            }
+        }
+    }
+
+    // Moves until we hit something!
+    private void moveUntilCollisionVertical(float amount){
+        // Check for collision with blocks
+        boolean movingDown = amount < 0;
+
+        // Update grounded
+        if(!movingDown){
+            grounded = false;
+        }
+        // Note: Calculate the reference point for collision. moving right > right, moving left > left.
+        float reference_y = (movingDown) ? y : y + height;
+        if (Manager.map.isNewBlockColumnVertical(reference_y, reference_y + amount)) {
+            // Get column
+            Coordinate coords_left = Manager.map.getBlockIndexByCoords(new Vector2(x, reference_y + amount));
+            Coordinate coords_right = Manager.map.getBlockIndexByCoords(new Vector2(x + width, reference_y + amount));
+            // check if a collision is found.
+            if (Manager.map.containsBlock(coords_left, coords_right)) {
+                // Calculate collisionpoint
+                Block block = Manager.map.getBlockByIndex(coords_left);
+
+
+                // Maximum travel distance is until we hit the block, so the very edge of it. (+1 buffer)
+                float limit;
+                if(movingDown) {
+                    limit = block.y + block.height;
+                    grounded = true;
+                }
+                else
+                    limit = block.y - 1 - height;
+
+                // Set x to the limit (otherwise we'd have passed it)
+                y = limit;
+                // Set current X speed to 0
+                currentMovementSpeed.y = 0;
+            } else {
+                y += amount; // MOVE
+            }
+        } else {
+            y += amount; // J
+        }
     }
 
     private boolean moveUntillCollision() {
@@ -138,6 +196,7 @@ public class Character extends Rectangle {
         //  get right upper corner of current position, pass it to the map and get corresponding block.
         //  check whether there is ANY block in between those two. if so; limit movement till those two.
         moveUntilCollisionHorizontal(currentMovementSpeed.x * Gdx.graphics.getDeltaTime());
+        moveUntilCollisionVertical(currentMovementSpeed.y * Gdx.graphics.getDeltaTime());
         return false;
     }
 
