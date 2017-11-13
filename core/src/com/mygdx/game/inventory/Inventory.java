@@ -2,14 +2,20 @@ package com.mygdx.game.inventory;
 
 import com.mygdx.game.inventory.items.Engine;
 import com.mygdx.game.inventory.items.Hull;
+import com.mygdx.game.inventory.items.itemtype.EngineType;
+import com.mygdx.game.inventory.items.itemtype.HullType;
+import com.mygdx.game.inventory.items.itemtype.TrunkType;
 import com.mygdx.game.inventory.resources.Resource;
 import com.mygdx.game.inventory.items.itemtype.DrillType;
 
 public class Inventory {
-    private DrillType drillType;
-    private Engine engine;
-    private Hull hull;
-    private
+
+    // Get standard Items
+    private DrillType drillType = DrillType.Iron;
+    private EngineType engineType = EngineType.Standard;
+    private HullType hullType = HullType.Standard;
+    private TrunkType trunkType = TrunkType.Standard;
+
     int[] resources;
 
     public Inventory(){
@@ -17,6 +23,14 @@ public class Inventory {
         for (int i = 0; i < resources.length; i++) {
             resources[i] = 0;
         }
+    }
+
+    public float getDrillSpeed(){
+        return drillType.drill.drillingSpeed;
+    }
+
+    public float getHullStrength(){
+        return hullType.hull.protection;
     }
 
     // Add a resource

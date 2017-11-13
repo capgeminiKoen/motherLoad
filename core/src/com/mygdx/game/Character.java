@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.GUI.Hud;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.inventory.Inventory;
 import com.mygdx.game.inventory.resources.Resource;
@@ -21,15 +22,19 @@ public class Character extends Rectangle {
     private boolean flip = false;
     private boolean grounded = false;
     private Inventory inventory;
+    private Hud hud;
+    private int health = 100;
 
 
     public void draw(SpriteBatch batch) {
         batch.draw(texture, flip ? x + width : x, y, flip ? -width : width, height);
+        hud.draw(batch, health);
     }
 
     public Character(String texturePath) {
          texture = new Texture(texturePath);
          inventory = new Inventory();
+         hud = new Hud(250,50);
     }
 
     public void accelerate(Direction direction) {
@@ -78,6 +83,7 @@ public class Character extends Rectangle {
 
     private void applyGravity() {
         if (!grounded) {
+            System.out.println("Applying gravity");
             currentMovementSpeed.y -= Manager.gravity * Gdx.graphics.getDeltaTime();
         }
     }
@@ -138,21 +144,38 @@ public class Character extends Rectangle {
 
     // Start drilling a block (:
     private void drill(Block block){
-        if(block.damage(10)){
+        // block.damage returns true when it is dead
+        if(block.damage(inventory.getDrillSpeed())){
             if(block.resource != Resource.None){
-
+                // If block contains a resource, add one to the inventory
+                inventory.addResource(block.resource);
             }
         }
     }
 
+    private void drillDown(){
+        // TODO: Implement drilling method
+
+    }
+
     // Moves until we hit something!
     private void moveUntilCollisionVertical(float amount){
+        if(amount == 0){
+            return;
+        }
+
         // Check for collision with blocks
         boolean movingDown = amount < 0;
 
         // Update grounded
         if(!movingDown){
             grounded = false;
+        }
+        // If already grounded, do nothing if we pull down. Maybe drill, that's it
+        else if(grounded){
+            drillDown();
+            currentMovementSpeed.y = 0; // Otherwise it will increase all the time.
+            return;
         }
         // Note: Calculate the reference point for collision. moving right > right, moving left > left.
         float reference_y = (movingDown) ? y : y + height;
@@ -165,6 +188,11 @@ public class Character extends Rectangle {
                 // Calculate collisionpoint
                 Block block = Manager.map.getBlockByIndex(coords_left);
 
+                // Hit block! if speed > Manager.thresholdspeed do damage
+                if(movingDown && currentMovementSpeed.y < -Manager.fallDamageSpeedThreshold){
+                    System.out.println(currentMovementSpeed.y);
+                    doDamage(-currentMovementSpeed.y);
+                }
 
                 // Maximum travel distance is until we hit the block, so the very edge of it. (+1 buffer)
                 float limit;
@@ -172,8 +200,9 @@ public class Character extends Rectangle {
                     limit = block.y + block.height;
                     grounded = true;
                 }
-                else
+                else {
                     limit = block.y - 1 - height;
+                }
 
                 // Set x to the limit (otherwise we'd have passed it)
                 y = limit;
@@ -185,6 +214,24 @@ public class Character extends Rectangle {
         } else {
             y += amount; // J
         }
+    }
+
+    private void doDamage(float amount){
+        // Calculate amount using hull strength
+        amount = amount / inventory.getHullStrength();
+        health -= amount;
+        if(health <= 0){
+            health = 0;
+            die();
+        }
+
+        // Play hit animation
+        hud.showHitEffect();
+    }
+
+    private void die(){
+        // TODO
+        // Do something
     }
 
     private boolean moveUntillCollision() {
