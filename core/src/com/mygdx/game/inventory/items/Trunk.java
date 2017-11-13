@@ -1,4 +1,4 @@
-package com.mygdx.game.inventory;
+package com.mygdx.game.inventory.items;
 
 public class Trunk extends Item {
     int space;

@@ -1,7 +1,9 @@
 package com.mygdx.game.inventory;
 
+import com.mygdx.game.inventory.items.Engine;
+import com.mygdx.game.inventory.items.Hull;
 import com.mygdx.game.inventory.resources.Resource;
-import com.mygdx.game.inventory.resources.resourcetypes.DrillType;
+import com.mygdx.game.inventory.items.itemtype.DrillType;
 
 public class Inventory {
     private DrillType drillType;

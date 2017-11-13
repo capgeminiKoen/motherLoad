@@ -1,6 +1,6 @@
-package com.mygdx.game.inventory.resources.resourcetypes;
+package com.mygdx.game.inventory.items.itemtype;
 
-import com.mygdx.game.inventory.Drill;
+import com.mygdx.game.inventory.items.Drill;
 
 public enum DrillType{
     Iron(new Drill(0, "Iron Drill", 1)),

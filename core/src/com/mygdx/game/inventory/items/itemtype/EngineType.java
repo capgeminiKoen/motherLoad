@@ -1,6 +1,6 @@
-package com.mygdx.game.inventory.resources.resourcetypes;
+package com.mygdx.game.inventory.items.itemtype;
 
-import com.mygdx.game.inventory.Engine;
+import com.mygdx.game.inventory.items.Engine;
 
 public enum EngineType {
     Standard(new Engine(0, "Standard Engine",100)),

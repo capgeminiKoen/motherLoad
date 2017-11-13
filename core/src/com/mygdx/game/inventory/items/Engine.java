@@ -1,4 +1,4 @@
-package com.mygdx.game.inventory;
+package com.mygdx.game.inventory.items;
 
 public class Engine extends Item {
     public float speed;
