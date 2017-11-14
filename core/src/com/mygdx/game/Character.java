@@ -25,18 +25,18 @@ public class Character extends Rectangle {
     private Block blockToDrill;
     private Inventory inventory;
     private Hud hud;
-    private int health = 100;
+    private int health = 100, maxHealth = 100;
 
 
     public void draw(SpriteBatch batch) {
         batch.draw(texture, flip ? x + width : x, y, flip ? -width : width, height);
-        hud.draw(batch, health);
+        hud.draw(batch, health, maxHealth);
     }
 
     public Character(String texturePath) {
          texture = new Texture(texturePath);
          inventory = new Inventory();
-         hud = new Hud(250,50);
+         hud = new Hud(250,25);
     }
 
     public void accelerate(Direction direction) {
@@ -224,7 +224,7 @@ public class Character extends Rectangle {
 
     private void doDamage(float amount){
         // Calculate amount using hull strength
-        amount = amount / inventory.getHullStrength();
+        amount = (amount * 5) / inventory.getHullStrength();
         health -= amount;
         if(health <= 0){
             health = 0;

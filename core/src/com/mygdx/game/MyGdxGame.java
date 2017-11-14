@@ -22,7 +22,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 	    // Create new map
-		map = new Map(2, 10, 1, 100);
+		map = new Map(10, 15, 1, 100);
+		map.initializeBlocks();
 		// Add ref to manager
 		Manager.map = map;
 		// New camera
@@ -62,7 +63,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		float cameraY = character.getY();
 		camera.position.set(cameraX, cameraY, 0);
 		camera.update();
-
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.inventory.resources.Resource;
+import com.sun.org.apache.regexp.internal.RE;
 
 public class Map {
 
@@ -22,11 +23,6 @@ public class Map {
         width = newWidth;
         pixelWidth = width * blockSize;
         pixelHeight = height * blockSize;
-        initializeBlocks();
-        blocks[0][0].setResource(Resource.Gold);
-        blocks[0][1].setResource(Resource.Iron);
-        blocks[0][2].setResource(Resource.Diamond);
-        blocks[0][3].setResource(Resource.Silver);
     }
 
     public Coordinate getHorizontalMapBounds(){
@@ -36,18 +32,31 @@ public class Map {
         return new Coordinate(0,pixelHeight);
     }
 
-    private void initializeBlocks() {
+    private Resource getRandomResource(int level){
+        for (Resource resource : Resource.values()) {
+            if(resource.firstOccurrence <= level){
+                // If we are lucky
+                if(Manager.random.nextFloat() * 100 < resource.occurrencePercentage){
+                    return resource;
+                }
+            }
+        }
+        return Resource.None;
+    }
+
+    public void initializeBlocks() {
         // For now, lets make all blocks normal at the start.
         // TODO
         // In the future, some have to be different types, as well as empty, etc.
         for (int i = 0; i < height - fillFromLevel; i++) {
             for (int j = 0; j < width; j++) {
-                blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize);
+                blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize, getRandomResource(height - i));
             }
         }
+        // Fill empty layers
         for(int i = height - fillFromLevel; i < height; i++){
             for (int j = 0; j < width; j++) {
-                blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize);
+                blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize, Resource.None);
             }
         }
     }

@@ -12,12 +12,13 @@ public class Block extends Rectangle{
     Resource resource = Resource.None;
     float crackLevel = 40, severeCrackLevel = 70;
 
-    public Block(BlockType newBlockType, int x, int y, int blockSize){
+    public Block(BlockType newBlockType, int x, int y, int blockSize, Resource resource){
         blockType = newBlockType;
         this.x = x * blockSize;
         this.y = y * blockSize;
         width = blockSize;
         height = blockSize;
+        this.resource = resource;
     }
 
     public boolean isEmpty(){

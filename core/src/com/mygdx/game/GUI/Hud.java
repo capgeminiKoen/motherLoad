@@ -7,24 +7,51 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mygdx.game.Coordinate;
 import com.mygdx.game.Manager;
 
 public class Hud {
 
     private int healthBarWidth, healthBarHeight;
+    private Coordinate healthBarPos = new Coordinate(10,10);
     private float hitEffectLength = 0.2f, currentHitEffectTime = 0.0f;
     private boolean isShowingHitEffect = false;
 
-    public Hud(int width, int height){
-        this.healthBarHeight = height;
-        this.healthBarWidth = width;
+    public Hud(int healthBarWidth, int healthBarHeight){
+        this.healthBarHeight = healthBarHeight;
+        this.healthBarWidth = healthBarWidth;
     }
 
-    public void draw(SpriteBatch batch, float health){
+    public void draw(SpriteBatch batch, float health, float maxHealth){
         // Draw the Hud here
+        drawHealthBar(batch, health, maxHealth);
+
+        // Show hit effect
         if(isShowingHitEffect){
             drawHitEffect(batch);
         }
+    }
+
+    private void drawHealthBar(SpriteBatch batch, float health, float maxHealth){
+        // Skip spriteBatch right now
+        batch.end();
+
+        // Draw the hit
+        ShapeRenderer shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
+        // Bar itself
+        Color color = new Color(1,0,0,1);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(color);
+        shapeRenderer.rect(Manager.screenSize.x - healthBarPos.x - healthBarWidth, healthBarPos.y, healthBarWidth * (health / maxHealth), healthBarHeight);
+
+        shapeRenderer.setColor(new Color(0.6f,0.6f,0.6f,1));
+        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+        // Draw EXACTLY SAME RECT, now with a line only
+        shapeRenderer.rect(Manager.screenSize.x - healthBarPos.x - healthBarWidth, healthBarPos.y, healthBarWidth, healthBarHeight);
+        shapeRenderer.end();
+        // Begin again
+        batch.begin();
     }
 
     private void drawHitEffect(SpriteBatch batch){
