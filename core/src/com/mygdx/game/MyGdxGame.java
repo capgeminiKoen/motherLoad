@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Utility.Utility;
+import com.mygdx.game.inventory.resources.Resource;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private int gameWidth = 800;
@@ -21,7 +22,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 	    // Create new map
-		map = new Map(10, 15, 1, 100);
+		map = new Map(2, 10, 1, 100);
 		// Add ref to manager
 		Manager.map = map;
 		// New camera
@@ -30,6 +31,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Spritebatch
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.projection);
+		// Blend for HUD
+		batch.enableBlending();
 		// Create new character
 		character = new Character("heli.gif");
 		// Get map bounds;

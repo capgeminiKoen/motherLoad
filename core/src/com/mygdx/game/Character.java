@@ -15,12 +15,14 @@ import com.mygdx.game.inventory.resources.Resource;
 public class Character extends Rectangle {
 
     private Vector2 currentMovementSpeed = new Vector2(0, 0);
-    private float maximumMovementSpeed = 1000;
-    public float accelerationSpeed = 500;
-    public float dampenSpeedAir = 100, dampenSpeedGround = 400;
+    private Vector2 drillingStartPosition;
+    private float dampenSpeedAir = 100, dampenSpeedGround = 400;
+    private float currentDrillingTime = 0.0f;
     private Texture texture;
     private boolean flip = false;
     private boolean grounded = false;
+    private boolean isDrilling = false;
+    private Block blockToDrill;
     private Inventory inventory;
     private Hud hud;
     private int health = 100;
@@ -65,25 +67,24 @@ public class Character extends Rectangle {
 
     private void accelerationX(int multiplier) {
         // Increase movementSpeed
-        currentMovementSpeed.x += multiplier * accelerationSpeed * Gdx.graphics.getDeltaTime();
-        if (Math.abs(currentMovementSpeed.x) > maximumMovementSpeed) {
+        currentMovementSpeed.x += multiplier * inventory.getAccelerationSpeed() * Gdx.graphics.getDeltaTime();
+        if (Math.abs(currentMovementSpeed.x) > inventory.getMaxSpeed()) {
             // Clip the currentMovementSpeed
-            currentMovementSpeed.x = (currentMovementSpeed.x < 0) ? -maximumMovementSpeed : maximumMovementSpeed;
+            currentMovementSpeed.x = (currentMovementSpeed.x < 0) ? -inventory.getMaxSpeed() : inventory.getMaxSpeed();
         }
     }
 
     private void accelerationY(int multiplier) {
         // Increase movementSpeed
-        currentMovementSpeed.y += multiplier * accelerationSpeed * Gdx.graphics.getDeltaTime();
-        if (Math.abs(currentMovementSpeed.y) > maximumMovementSpeed) {
+        currentMovementSpeed.y += multiplier * inventory.getAccelerationSpeed() * Gdx.graphics.getDeltaTime();
+        if (Math.abs(currentMovementSpeed.y) > inventory.getMaxSpeed()) {
             // Clip the currentMovementSpeed
-            currentMovementSpeed.y = (currentMovementSpeed.y < 0) ? -maximumMovementSpeed : maximumMovementSpeed;
+            currentMovementSpeed.y = (currentMovementSpeed.y < 0) ? -inventory.getMaxSpeed() : inventory.getMaxSpeed();
         }
     }
 
     private void applyGravity() {
         if (!grounded) {
-            System.out.println("Applying gravity");
             currentMovementSpeed.y -= Manager.gravity * Gdx.graphics.getDeltaTime();
         }
     }
@@ -118,9 +119,13 @@ public class Character extends Rectangle {
             if (Manager.map.containsBlock(coords_down, coords_up)) {
                 // Calculate collisionpoint
                 Block block = Manager.map.getBlockByIndex(coords_down);
+                if(block == null) return;
                 // When we found a block and we are grounded, drill it :)
                 if(grounded && block != null){
+                    // Drill block
                     drill(block);
+                    currentMovementSpeed.y = 0;
+                    return;
                 }
 
                 // Maximum travel distance is until we hit the block, so the very edge of it. (+1 buffer)
@@ -144,18 +149,20 @@ public class Character extends Rectangle {
 
     // Start drilling a block (:
     private void drill(Block block){
-        // block.damage returns true when it is dead
-        if(block.damage(inventory.getDrillSpeed())){
-            if(block.resource != Resource.None){
-                // If block contains a resource, add one to the inventory
-                inventory.addResource(block.resource);
-            }
-        }
+        System.out.println("Drilling into block " + block);
+        System.out.println("Estimated drilltime is " + block.resource.baseDrillTime);
+        blockToDrill = block;
+        isDrilling = true;
+        drillingStartPosition = getCenter();
     }
 
     private void drillDown(){
-        // TODO: Implement drilling method
-
+        // Get correct block below center of sprite
+        // Subtract 5 pixels to be sure to get the right block.
+        Block block = Manager.map.worldCoordinatesToBlock(x + width / 2, y - 5);
+        if(block != null && block.blockType != BlockType.Empty){
+            drill(block);
+        }
     }
 
     // Moves until we hit something!
@@ -190,7 +197,6 @@ public class Character extends Rectangle {
 
                 // Hit block! if speed > Manager.thresholdspeed do damage
                 if(movingDown && currentMovementSpeed.y < -Manager.fallDamageSpeedThreshold){
-                    System.out.println(currentMovementSpeed.y);
                     doDamage(-currentMovementSpeed.y);
                 }
 
@@ -247,32 +253,6 @@ public class Character extends Rectangle {
         return false;
     }
 
-    public void move() {
-        x += currentMovementSpeed.x * Gdx.graphics.getDeltaTime();
-        y += currentMovementSpeed.y * Gdx.graphics.getDeltaTime();
-        if (y > 0) {
-            grounded = false;
-        }
-
-        if (x + width > Manager.map.pixelWidth) {
-            currentMovementSpeed.x = 0;
-            x = Manager.map.pixelWidth - width;
-        }
-        if (x < 0) {
-            currentMovementSpeed.x = 0;
-            x = 0;
-        }
-        if (y + height > Manager.screenSize.y) {
-            currentMovementSpeed.y = 0;
-            y = Manager.screenSize.y - height;
-        }
-        if (y < 0) {
-            grounded = true;
-            currentMovementSpeed.y = 0;
-            y = 0;
-        }
-    }
-
     public void dampenXMovement() {
 
         float dampenSpeed = grounded ? dampenSpeedGround : dampenSpeedAir;
@@ -293,6 +273,48 @@ public class Character extends Rectangle {
         }
     }
 
+    // Drilltime update
+    private void updateDrillTime(){
+        currentDrillingTime += (inventory.getDrillSpeed() / blockToDrill.resource.baseDrillTime) *
+                Gdx.graphics.getDeltaTime();
+    }
+
+    private void updateDrillingMovement(float percentage){
+        float delta_x = blockToDrill.getCenter().x - drillingStartPosition.x;
+        x = drillingStartPosition.x - width / 2 + delta_x * percentage;
+        float delta_y = blockToDrill.getCenter().y - drillingStartPosition.y;
+        y = drillingStartPosition.y - height / 2 + delta_y * percentage;
+    }
+
+    private Vector2 getCenter(){
+        return new Vector2(x + width / 2, y + height / 2);
+    }
+
+    private void moveTowardsDrillTarget(){
+        // Update the drilling time
+        updateDrillTime();
+        // Update position
+        updateDrillingMovement(currentDrillingTime);
+        // Make a percentage
+        if(blockToDrill.drill(currentDrillingTime * 100)) {
+            destroyBlock(blockToDrill);
+        }
+    }
+
+    private void destroyBlock(Block block){
+        currentDrillingTime = 0.0f;
+        isDrilling = false;
+        // If block is broken, set done
+        if (block.resource != Resource.None) {
+            // If block contains a resource, add one to the inventory
+            inventory.addResource(block.resource);
+        }
+        // Ground dissapeared ;-)
+        grounded = false;
+        // Set speed to 0
+        currentMovementSpeed.y = 0;
+        currentMovementSpeed.x = 0;
+    }
 
     public void update() {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
@@ -311,8 +333,15 @@ public class Character extends Rectangle {
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             accelerate(Direction.Down);
         }
-        // Move
-        moveUntillCollision();
+
+        if(!isDrilling) {
+            // Move
+            moveUntillCollision();
+        }
+        else{
+            // Drill to position
+            moveTowardsDrillTarget();
+        }
         // Apply gravity
         applyGravity();
     }

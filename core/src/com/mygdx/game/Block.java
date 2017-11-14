@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.inventory.resources.Resource;
 import com.sun.org.apache.regexp.internal.RE;
 
@@ -9,12 +10,10 @@ public class Block extends Rectangle{
 
     BlockType blockType;
     Resource resource = Resource.None;
-    float health;
-    float crackLevel = 60, severeCrackLevel = 30;
+    float crackLevel = 40, severeCrackLevel = 70;
 
     public Block(BlockType newBlockType, int x, int y, int blockSize){
         blockType = newBlockType;
-        health = 100;
         this.x = x * blockSize;
         this.y = y * blockSize;
         width = blockSize;
@@ -34,19 +33,23 @@ public class Block extends Rectangle{
         }
     }
 
+    public Vector2 getCenter() {
+        return new Vector2(x + width  /2, y + height / 2);
+    }
+
     public void setResource(Resource resource){
         this.resource = resource;
     }
 
-    public boolean damage(float damage){
-        health -= damage;
-        if(blockType == BlockType.Normal && health < crackLevel){
+    // Let the block know what the drilled percentage is ([0.0f - 1.0f])
+    public boolean drill(float drillPercentage){
+        if(blockType == BlockType.Normal && drillPercentage > crackLevel){
             blockType = BlockType.Cracked;
         }
-        if(blockType == BlockType.Cracked && health < severeCrackLevel){
+        if(blockType == BlockType.Cracked && drillPercentage > severeCrackLevel){
             blockType = BlockType.CrackedSevere;
         }
-        if(health <= 0 && blockType != BlockType.Empty){
+        if(drillPercentage >= 100 && blockType != BlockType.Empty){
             blockType = BlockType.Empty;
             return true;
         }

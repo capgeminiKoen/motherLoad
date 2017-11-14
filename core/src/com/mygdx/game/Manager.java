@@ -6,5 +6,5 @@ public class Manager {
     public  static final float gravity = 200f;
     public static Vector2 screenSize = new Vector2(0,0);
     public static Map map;
-    public static final float fallDamageSpeedThreshold = 250.0f;
+    public static final float fallDamageSpeedThreshold = 500.0f;
 }

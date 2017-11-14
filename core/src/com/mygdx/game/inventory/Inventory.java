@@ -33,6 +33,13 @@ public class Inventory {
         return hullType.hull.protection;
     }
 
+    public float getAccelerationSpeed(){
+        return engineType.engine.accelerationSpeed;
+    }
+
+    public float getMaxSpeed(){
+        return engineType.engine.maxSpeed;
+    }
     // Add a resource
     public void addResource(Resource resource){
         resources[resource.id]++;

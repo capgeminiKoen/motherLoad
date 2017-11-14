@@ -23,7 +23,10 @@ public class Map {
         pixelWidth = width * blockSize;
         pixelHeight = height * blockSize;
         initializeBlocks();
-        blocks[0][4].setResource(Resource.Gold);
+        blocks[0][0].setResource(Resource.Gold);
+        blocks[0][1].setResource(Resource.Iron);
+        blocks[0][2].setResource(Resource.Diamond);
+        blocks[0][3].setResource(Resource.Silver);
     }
 
     public Coordinate getHorizontalMapBounds(){
@@ -47,6 +50,12 @@ public class Map {
                 blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize);
             }
         }
+    }
+
+    public Block worldCoordinatesToBlock(float x, float y){
+        int block_x = worldToBlockIndexHorizontal(Math.round(x));
+        int block_y = worldToBlockIndexVertical(Math.round(y));
+        return getBlockByIndex(block_x, block_y);
     }
 
     public Coordinate getBlockIndexByCoords(int x, int y) {
@@ -135,8 +144,7 @@ public class Map {
     public int worldToBlockIndexHorizontal(int xPos_world) {
         // Block [0,0] is from [0,0] to [blockSize-1, blockSize-1]
         int index = xPos_world / blockSize;
-        if (index < 0) index = 0;
-        if (index >= width) index = width - 1;
+        if (index < 0 || index >= width) index = Utility.NOT_FOUND;
         return index;
     }
 
@@ -144,6 +152,7 @@ public class Map {
     public int worldToBlockIndexVertical(int yPos_world) {
         // NO CAPS ON Y POS!!! :)
         int index = yPos_world / blockSize;
+        if(index < 0 || index >= height) index = Utility.NOT_FOUND;
         return index;
     }
 
