@@ -16,6 +16,10 @@ public class Inventory {
     private HullType hullType = HullType.Standard;
     private TrunkType trunkType = TrunkType.Standard;
 
+    public int[] getResources() {
+        return resources;
+    }
+
     int[] resources;
 
     public Inventory(){

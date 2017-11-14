@@ -11,8 +11,8 @@ import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.inventory.resources.Resource;
 
 public class MyGdxGame extends ApplicationAdapter {
-	private int gameWidth = 800;
-	private int gameHeight = 480;
+	private int gameWidth = 1200;
+	private int gameHeight = 640;
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
 	private Character character;
@@ -22,13 +22,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 	    // Create new map
-		map = new Map(10, 15, 1, 100);
+		map = new Map(100, 15, 1, 100);
 		map.initializeBlocks();
 		// Add ref to manager
 		Manager.map = map;
 		// New camera
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, gameWidth, gameHeight);
+		Manager.camera = camera;
 		// Spritebatch
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.projection);
@@ -54,16 +55,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Set projection matrix for the spriteBatch
 		batch.setProjectionMatrix(camera.combined);
 
-		// Update camera
-		// Follow player -> bound by mapsize
-		Coordinate mapBounds = map.getHorizontalMapBounds();
-		float cameraX = Utility.clamp(character.getX(),
-				mapBounds.x + camera.viewportWidth / 2,
-				mapBounds.y - camera.viewportWidth / 2);
-		float cameraY = character.getY();
-		camera.position.set(cameraX, cameraY, 0);
-		camera.update();
-
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -82,6 +73,19 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void update(){
 		// Update the character
 		character.update();
+		updateCamera();
+	}
+
+	private void updateCamera(){
+		// Update camera
+		// Follow player -> bound by mapsize
+		Coordinate mapBounds = map.getHorizontalMapBounds();
+		float cameraX = Utility.clamp(character.getX(),
+				mapBounds.x + camera.viewportWidth / 2,
+				mapBounds.y - camera.viewportWidth / 2);
+		float cameraY = character.getY();
+		camera.position.set(cameraX, cameraY, 0);
+		camera.update();
 	}
 	
 	@Override

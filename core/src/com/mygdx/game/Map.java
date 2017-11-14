@@ -13,6 +13,7 @@ public class Map {
     int blockSize;
     int pixelWidth, pixelHeight;
     private int fillFromLevel;
+    private float emptyPercentage = 5.0f;
     Block[][] blocks;
 
     public Map(int newHeight, int newWidth, int fillMapFromLayer, int blockSize) {
@@ -44,13 +45,24 @@ public class Map {
         return Resource.None;
     }
 
+    // Determines if next
+    private boolean isBlockEmpty(){
+        return Manager.random.nextFloat() * 100 < emptyPercentage;
+    }
+
     public void initializeBlocks() {
         // For now, lets make all blocks normal at the start.
         // TODO
         // In the future, some have to be different types, as well as empty, etc.
         for (int i = 0; i < height - fillFromLevel; i++) {
             for (int j = 0; j < width; j++) {
-                blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize, getRandomResource(height - i));
+                // Some of the blocks are empty
+                if(isBlockEmpty()){
+                    blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize, Resource.None);
+                }
+                else {
+                    blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize, getRandomResource(height - i));
+                }
             }
         }
         // Fill empty layers

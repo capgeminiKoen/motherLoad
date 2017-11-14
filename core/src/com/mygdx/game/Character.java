@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.GUI.Hud;
+import com.mygdx.game.GUI.InventoryScreen;
+import com.mygdx.game.GUI.ScreenType;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.inventory.Inventory;
 import com.mygdx.game.inventory.resources.Resource;
@@ -37,6 +39,8 @@ public class Character extends Rectangle {
          texture = new Texture(texturePath);
          inventory = new Inventory();
          hud = new Hud(250,25);
+         // Set inventory of character
+        ((InventoryScreen) ScreenType.Inventory.getScreen()).setInventory(inventory);
     }
 
     public void accelerate(Direction direction) {
@@ -149,8 +153,6 @@ public class Character extends Rectangle {
 
     // Start drilling a block (:
     private void drill(Block block){
-        System.out.println("Drilling into block " + block);
-        System.out.println("Estimated drilltime is " + block.resource.baseDrillTime);
         blockToDrill = block;
         isDrilling = true;
         drillingStartPosition = getCenter();
