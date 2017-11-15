@@ -12,6 +12,7 @@ public class Manager {
     public static Map map;
     public static final float fallDamageSpeedThreshold = 500.0f;
     public static final Random random = new Random();
+    public static final int fontSize = 15;
     public static final BitmapFont font = new BitmapFont();
     public static Camera camera;
 }
