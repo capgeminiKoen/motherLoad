@@ -9,7 +9,8 @@ import com.mygdx.game.inventory.resources.Resource;
 public class InventoryScreen extends Screen {
 
     private int tileSize = 64;
-    private int width = tileSize * 5, height = tileSize * 10 + 20;
+    private int rows = 5, cols = 5;
+    private int width = tileSize * cols, height = tileSize * rows + 20;
     private String title = "Inventory";
     private Inventory inventory;
 
@@ -37,7 +38,8 @@ public class InventoryScreen extends Screen {
         Resource[] resourceInstances = Resource.values();
         for (int i = 0; i < resources.length; i++) {
             if(resources[i] > 0){
-                batch.draw(resourceInstances[i].texture, x + tileSize * currentIndex, y);
+                batch.draw(resourceInstances[i].texture, x + tileSize * currentIndex, y, tileSize, tileSize);
+                Manager.font.draw(batch, resources[i] + "X", x + tileSize * currentIndex,y + 15);
                 currentIndex++;
             }
         }

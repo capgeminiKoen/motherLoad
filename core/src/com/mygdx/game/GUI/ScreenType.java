@@ -1,6 +1,7 @@
 package com.mygdx.game.GUI;
 
 public enum ScreenType {
+    None(null),
     Inventory(new InventoryScreen());
 
     public Screen getScreen() {

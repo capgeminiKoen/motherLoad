@@ -16,7 +16,7 @@ public class Hud {
     private Coordinate healthBarPos = new Coordinate(10,10);
     private float hitEffectLength = 0.2f, currentHitEffectTime = 0.0f;
     private boolean isShowingHitEffect = false;
-    private ScreenType currentScreen = ScreenType.Inventory;
+    private ScreenType currentScreen = ScreenType.None;
 
     //
     public Hud(int healthBarWidth, int healthBarHeight){
@@ -34,7 +34,9 @@ public class Hud {
         }
 
         // Draw Screen
-        currentScreen.getScreen().draw(batch);
+        if(currentScreen != ScreenType.None) {
+            currentScreen.getScreen().draw(batch);
+        }
     }
 
     private void drawHealthBar(SpriteBatch batch, float health, float maxHealth){
@@ -91,5 +93,13 @@ public class Hud {
     public void showHitEffect(){
         currentHitEffectTime = hitEffectLength;
         isShowingHitEffect = true;
+    }
+
+    public void switchMenu(ScreenType screenType){
+        if(currentScreen == screenType){
+            currentScreen = ScreenType.None;
+            return;
+        }
+        currentScreen = screenType;
     }
 }

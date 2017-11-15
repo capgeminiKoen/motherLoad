@@ -28,6 +28,7 @@ public class Character extends Rectangle {
     private Inventory inventory;
     private Hud hud;
     private int health = 100, maxHealth = 100;
+    private int money = 0;
 
 
     public void draw(SpriteBatch batch) {
@@ -334,6 +335,9 @@ public class Character extends Rectangle {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             accelerate(Direction.Down);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.I)){
+            hud.switchMenu(ScreenType.Inventory);
         }
 
         if(!isDrilling) {
