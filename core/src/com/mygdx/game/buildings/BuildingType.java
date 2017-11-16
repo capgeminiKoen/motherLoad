@@ -4,7 +4,7 @@ import com.mygdx.game.Coordinate;
 
 public enum BuildingType {
     Warehouse(new Warehouse("warehouse.png", new Coordinate(100, 0))),
-    TankStation(new TankStation("warehouse.png", new Coordinate(350, 0)));
+    TankStation(new TankStation("tankstation.png", new Coordinate(350, 0)));
 
     public Building building;
 

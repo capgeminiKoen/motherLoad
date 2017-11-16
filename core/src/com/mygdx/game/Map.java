@@ -58,12 +58,16 @@ public class Map {
         // In the future, some have to be different types, as well as empty, etc.
         for (int i = 0; i < height - fillFromLevel; i++) {
             for (int j = 0; j < width; j++) {
-                // Some of the blocks are empty
-                if(isBlockEmpty()){
-                    blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize, Resource.None);
+                if(i == height - fillFromLevel - 1){
+                    blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize, Resource.None);
                 }
                 else {
-                    blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize, getRandomResource(height - i));
+                    // Some of the blocks are empty
+                    if (isBlockEmpty()) {
+                        blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize, Resource.None);
+                    } else {
+                        blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize, getRandomResource(height - i));
+                    }
                 }
             }
         }

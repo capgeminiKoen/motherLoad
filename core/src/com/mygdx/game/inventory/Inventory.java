@@ -23,7 +23,7 @@ public class Inventory {
     int[] resources;
 
     public Inventory(){
-        resources = new int[Resource.values().length - 1]; // -1 for None
+        resources = new int[Resource.values().length];
         for (int i = 0; i < resources.length; i++) {
             resources[i] = 0;
         }
