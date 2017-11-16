@@ -18,7 +18,7 @@ public class InventoryScreen extends Screen {
     private int width = tileSize * cols, height = bottomSize + tileSize * rows + topSize;
     private String title = "Inventory";
     private Inventory inventory;
-
+    
     public void setInventory(Inventory inventory){
         this.inventory = inventory;
     }
@@ -48,7 +48,7 @@ public class InventoryScreen extends Screen {
 
     private void drawInventoryDetails(SpriteBatch batch, float x, float y){
         int index = 0;
-        font.draw(batch, "Money: ", x, y - index++ * Manager.fontSize);
+        font.draw(batch, "Money: " + Manager.character.getMoney(), x, y - index++ * Manager.fontSize);
         font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
         font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
         font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);

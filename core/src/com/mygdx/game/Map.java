@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Utility.Utility;
+import com.mygdx.game.buildings.Building;
+import com.mygdx.game.buildings.BuildingType;
 import com.mygdx.game.inventory.resources.Resource;
 import com.sun.org.apache.regexp.internal.RE;
 
@@ -205,6 +207,18 @@ public class Map {
             for (int j = 0; j < width; j++) {
                 blocks[i][j].draw(batch);
             }
+        }
+        drawBuildings(batch);
+    }
+
+    private void drawBuildings(SpriteBatch batch){
+        for(BuildingType buildingType : BuildingType.values()){
+            // Draw each building
+            batch.draw(buildingType.building.texture,
+                    buildingType.building.position.x,
+                    buildingType.building.position.y + Manager.map.getVerticalMapBounds().y,
+                    buildingType.building.texture.getWidth(),
+                    buildingType.building.texture.getHeight());
         }
     }
 

@@ -33,7 +33,7 @@ public class Character extends Rectangle {
 
     public void draw(SpriteBatch batch) {
         batch.draw(texture, flip ? x + width : x, y, flip ? -width : width, height);
-        hud.draw(batch, health, maxHealth);
+        hud.draw(batch);
     }
 
     public Character(String texturePath) {
@@ -44,7 +44,7 @@ public class Character extends Rectangle {
         ((InventoryScreen) ScreenType.Inventory.getScreen()).setInventory(inventory);
     }
 
-    public void accelerate(Direction direction) {
+    private void accelerate(Direction direction) {
         // Determine multiplier
         int multiplier = 0;
         switch (direction) {
@@ -126,7 +126,7 @@ public class Character extends Rectangle {
                 Block block = Manager.map.getBlockByIndex(coords_down);
                 if(block == null) return;
                 // When we found a block and we are grounded, drill it :)
-                if(grounded && block != null){
+                if(grounded){
                     // Drill block
                     drill(block);
                     currentMovementSpeed.y = 0;
@@ -352,5 +352,11 @@ public class Character extends Rectangle {
         applyGravity();
     }
 
+    public int getMoney() {
+        return money;
+    }
 
+    public float getHealthPercentage(){
+        return health / maxHealth;
+    }
 }

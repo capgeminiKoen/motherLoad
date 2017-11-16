@@ -15,4 +15,5 @@ public class Manager {
     public static final int fontSize = 15;
     public static final BitmapFont font = new BitmapFont();
     public static Camera camera;
+    public static Character character;
 }

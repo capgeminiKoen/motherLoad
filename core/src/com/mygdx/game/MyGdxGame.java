@@ -22,7 +22,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 	    // Create new map
-		map = new Map(100, 15, 1, 100);
+		map = new Map(3, 15, 0, 100);
 		map.initializeBlocks();
 		// Add ref to manager
 		Manager.map = map;
@@ -43,6 +43,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		character.x = map_hor.y / 2;
 		character.height = 40;
 		character.width = 99;
+		// Set character in the manager
+		Manager.character = character;
 		// Save screensize
 		Manager.screenSize.x = gameWidth;
 		Manager.screenSize.y = gameHeight;

@@ -22,9 +22,9 @@ public class Hud {
         this.healthBarWidth = healthBarWidth;
     }
 
-    public void draw(SpriteBatch batch, float health, float maxHealth){
+    public void draw(SpriteBatch batch){
         // Draw the Hud here
-        drawHealthBar(batch, health, maxHealth);
+        drawHealthBar(batch);
 
         // Show hit effect
         if(isShowingHitEffect){
@@ -37,7 +37,7 @@ public class Hud {
         }
     }
 
-    private void drawHealthBar(SpriteBatch batch, float health, float maxHealth){
+    private void drawHealthBar(SpriteBatch batch){
         // Skip spriteBatch right now
         batch.end();
 
@@ -48,7 +48,7 @@ public class Hud {
         Color color = new Color(1,0,0,1);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(color);
-        shapeRenderer.rect(Manager.screenSize.x - healthBarPos.x - healthBarWidth, healthBarPos.y, healthBarWidth * (health / maxHealth), healthBarHeight);
+        shapeRenderer.rect(Manager.screenSize.x - healthBarPos.x - healthBarWidth, healthBarPos.y, healthBarWidth * Manager.character.getHealthPercentage(), healthBarHeight);
 
         shapeRenderer.setColor(new Color(0.6f,0.6f,0.6f,1));
         shapeRenderer.set(ShapeRenderer.ShapeType.Line);
