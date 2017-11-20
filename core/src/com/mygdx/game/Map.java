@@ -77,6 +77,16 @@ public class Map {
                 blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize, Resource.None);
             }
         }
+
+        // Fill first (so actually last internally) layer with un-destroyable blocks under the buildings.
+        // Get the block through those handy functions
+        for(BuildingType buildingType : BuildingType.values()){
+            int block_x = worldToBlockIndexHorizontal(buildingType.building.position.x);
+            int block_x_2 = worldToBlockIndexHorizontal(buildingType.building.position.x + buildingType.building.texture.getWidth());
+            for (int i = block_x; i <= block_x_2; i++) {
+                blocks[height - 1][i].blockType = BlockType.Unbreakable;
+            }
+        }
     }
 
     public Block worldCoordinatesToBlock(float x, float y){
@@ -218,11 +228,7 @@ public class Map {
     private void drawBuildings(SpriteBatch batch){
         for(BuildingType buildingType : BuildingType.values()){
             // Draw each building
-            batch.draw(buildingType.building.texture,
-                    buildingType.building.position.x,
-                    buildingType.building.position.y + Manager.map.getVerticalMapBounds().y,
-                    buildingType.building.texture.getWidth(),
-                    buildingType.building.texture.getHeight());
+            buildingType.building.draw(batch);
         }
     }
 

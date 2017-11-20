@@ -21,33 +21,33 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
+	    // Make screenSize available
+		Manager.screenSize.x = gameWidth;
+		Manager.screenSize.y = gameHeight;
+		// New camera
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, gameWidth, gameHeight);
+		Manager.camera = camera;
 	    // Create new map
 		map = new Map(100, 15, 0, 100);
 		map.initializeBlocks();
 		// Add ref to manager
 		Manager.map = map;
-		// New camera
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, gameWidth, gameHeight);
-		Manager.camera = camera;
 		// Spritebatch
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.projection);
 		// Blend for HUD
 		batch.enableBlending();
 		// Create new character
-		character = new Character("vehicle.png");
+		character = new Character("heli.gif", false);
 		// Get map bounds;
         Coordinate map_hor = map.getHorizontalMapBounds(), map_vert = map.getVerticalMapBounds();
 		character.y = map_vert.y;
 		character.x = map_hor.y / 2;
-		character.height = 80;
+		character.height = 35;
 		character.width = 80;
 		// Set character in the manager
 		Manager.character = character;
-		// Save screensize
-		Manager.screenSize.x = gameWidth;
-		Manager.screenSize.y = gameHeight;
 	}
 
 	@Override

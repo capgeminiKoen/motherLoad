@@ -14,25 +14,30 @@ public class InventoryScreen extends Screen {
     private int tileSize = 64;
     private int rows = 5, cols = 5;
     private int bottomSize = 50;
-    private int topSize = 20;
-    private int width = tileSize * cols, height = bottomSize + tileSize * rows + topSize;
-    private String title = "Inventory";
     private Inventory inventory;
-    
+
+    public InventoryScreen(){
+        width = tileSize * cols;
+        height = bottomSize + tileSize * rows + topSize;
+        title = "Inventory";
+        anchor = Anchor.DOWN_RIGHT;
+        initializeRect();
+    }
+
     public void setInventory(Inventory inventory){
         this.inventory = inventory;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        // Draw background
-        drawBackground(batch);
+        super.draw(batch);
 
         // Draw grid
         drawInventoryFrame(batch, Manager.screenSize.x - width, bottomSize);
 
         // Set projection matrix to the camera's position
         batch.setProjectionMatrix(Manager.camera.projection);
+
         // Draw title
         font.draw(batch, title, Manager.screenSize.x / 2 - width, - Manager.screenSize.y / 2 + height);
 
@@ -52,27 +57,6 @@ public class InventoryScreen extends Screen {
         font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
         font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
         font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
-    }
-
-    private void drawBackground(SpriteBatch batch){
-        // Skip spriteBatch right now
-        batch.end();
-
-        // Draw the hit
-        ShapeRenderer shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setAutoShapeType(true);
-        // Bar itself
-        Color color = new Color(0.4f,0.4f,0.4f,1);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(color);
-
-        // Draw rect
-        shapeRenderer.rect(Manager.screenSize.x - width, 0, width, height);
-
-        shapeRenderer.end();
-
-        // Start batch again
-        batch.begin();
     }
 
     private void drawInventoryItems(SpriteBatch batch, float x, float y){

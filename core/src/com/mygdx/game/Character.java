@@ -11,6 +11,8 @@ import com.mygdx.game.GUI.Hud;
 import com.mygdx.game.GUI.InventoryScreen;
 import com.mygdx.game.GUI.ScreenType;
 import com.mygdx.game.Utility.Utility;
+import com.mygdx.game.buildings.Building;
+import com.mygdx.game.buildings.BuildingType;
 import com.mygdx.game.inventory.Inventory;
 import com.mygdx.game.inventory.resources.Resource;
 
@@ -21,6 +23,7 @@ public class Character extends Rectangle {
     private float dampenSpeedAir = 100, dampenSpeedGround = 400;
     private float currentDrillingTime = 0.0f;
     private Texture texture;
+    private boolean textureFacingRight = false;
     private boolean flip = false;
     private boolean grounded = false;
     private boolean isDrilling = false;
@@ -28,6 +31,8 @@ public class Character extends Rectangle {
     private Inventory inventory;
     private Hud hud;
     private int health = 100, maxHealth = 100;
+    private float fuelLevel;
+    private float fuelDeclineRate = 0.1f; // per sec
     private int money = 0;
 
 
@@ -39,9 +44,15 @@ public class Character extends Rectangle {
     public Character(String texturePath) {
          texture = new Texture(texturePath);
          inventory = new Inventory();
-         hud = new Hud(250,25);
+         // Initialize fuelLevel to its maximum.
+         fuelLevel = inventory.getTankSize();
+         hud = new Hud();
          // Set inventory of character
         ((InventoryScreen) ScreenType.Inventory.getScreen()).setInventory(inventory);
+    }
+    public Character(String texturePath, boolean left){
+        this(texturePath);
+        textureFacingRight = !left;
     }
 
     private void accelerate(Direction direction) {
@@ -88,6 +99,7 @@ public class Character extends Rectangle {
         }
     }
 
+    // Apply gravity if we are not grounded.
     private void applyGravity() {
         if (!grounded) {
             currentMovementSpeed.y -= Manager.gravity * Gdx.graphics.getDeltaTime();
@@ -152,8 +164,20 @@ public class Character extends Rectangle {
         }
     }
 
+    // Update fuel levels
+    private void reduceFuel(){
+        fuelLevel -= fuelDeclineRate * Gdx.graphics.getDeltaTime();
+        if(fuelLevel < 0){
+            fuelLevel = 0;
+            die();
+        }
+    }
+
     // Start drilling a block (:
     private void drill(Block block){
+        if(!block.blockType.isDrillable()){
+            return;
+        }
         blockToDrill = block;
         isDrilling = true;
         drillingStartPosition = getCenter();
@@ -222,6 +246,14 @@ public class Character extends Rectangle {
             }
         } else {
             y += amount; // J
+        }
+    }
+
+    private void checkBuildingOverlap(){
+        for(BuildingType buildingType : BuildingType.values()){
+            if(buildingType.building.containsPosition(getCenter())){
+                hud.switchMenu(buildingType.screenType);
+            }
         }
     }
 
@@ -320,12 +352,19 @@ public class Character extends Rectangle {
     }
 
     public void update() {
+
+        // update fuel levels
+        reduceFuel();
+
+        // Figure out if we are entering a building
+        checkBuildingOverlap();
+
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             accelerate(Direction.Left);
-            flip = true;
+            flip = textureFacingRight;
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             accelerate(Direction.Right);
-            flip = false;
+            flip = !textureFacingRight;
         } else {
             // Dampen X movement!
             dampenXMovement();
@@ -358,5 +397,8 @@ public class Character extends Rectangle {
 
     public float getHealthPercentage(){
         return health / maxHealth;
+    }
+    public float getFuelPercentage() {
+        return fuelLevel / inventory.getTankSize();
     }
 }

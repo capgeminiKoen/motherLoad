@@ -2,11 +2,8 @@ package com.mygdx.game.inventory;
 
 import com.mygdx.game.inventory.items.Engine;
 import com.mygdx.game.inventory.items.Hull;
-import com.mygdx.game.inventory.items.itemtype.EngineType;
-import com.mygdx.game.inventory.items.itemtype.HullType;
-import com.mygdx.game.inventory.items.itemtype.TrunkType;
+import com.mygdx.game.inventory.items.itemtype.*;
 import com.mygdx.game.inventory.resources.Resource;
-import com.mygdx.game.inventory.items.itemtype.DrillType;
 
 public class Inventory {
 
@@ -15,6 +12,7 @@ public class Inventory {
     private EngineType engineType = EngineType.Standard;
     private HullType hullType = HullType.Standard;
     private TrunkType trunkType = TrunkType.Standard;
+    private TankType tankType = TankType.Normal;
 
     public int[] getResources() {
         return resources;
@@ -39,6 +37,10 @@ public class Inventory {
 
     public float getAccelerationSpeed(){
         return engineType.engine.accelerationSpeed;
+    }
+
+    public float getTankSize(){
+        return tankType.tank.getSize();
     }
 
     public float getMaxSpeed(){

@@ -10,21 +10,17 @@ import com.mygdx.game.Manager;
 
 public class Hud {
 
-    private int healthBarWidth, healthBarHeight;
+    private int barWidth = 250, barHeight = 10;
     private Coordinate healthBarPos = new Coordinate(10,10);
+    private Coordinate fuelBarPos = new Coordinate(10,20);
     private float hitEffectLength = 0.2f, currentHitEffectTime = 0.0f;
     private boolean isShowingHitEffect = false;
     private ScreenType currentScreen = ScreenType.None;
 
-    //
-    public Hud(int healthBarWidth, int healthBarHeight){
-        this.healthBarHeight = healthBarHeight;
-        this.healthBarWidth = healthBarWidth;
-    }
-
     public void draw(SpriteBatch batch){
         // Draw the Hud here
         drawHealthBar(batch);
+        drawFuelBar(batch);
 
         // Show hit effect
         if(isShowingHitEffect){
@@ -38,6 +34,22 @@ public class Hud {
     }
 
     private void drawHealthBar(SpriteBatch batch){
+        Color color = new Color(1,0,0,1);
+        float x = Manager.screenSize.x - healthBarPos.x - barWidth;
+        float y = healthBarPos.y;
+        float percentage = Manager.character.getHealthPercentage();
+        drawBar(batch, color, x, y, percentage);
+    }
+
+    private void drawFuelBar(SpriteBatch batch){
+        Color color = new Color(0,0,1,1);
+        float x = Manager.screenSize.x - fuelBarPos.x - barWidth;
+        float y = fuelBarPos.y;
+        float percentage = Manager.character.getFuelPercentage();
+        drawBar(batch, color, x, y, percentage);
+    }
+
+    private void drawBar(SpriteBatch batch, Color color, float x, float y, float percentage){
         // Skip spriteBatch right now
         batch.end();
 
@@ -45,15 +57,15 @@ public class Hud {
         ShapeRenderer shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         // Bar itself
-        Color color = new Color(1,0,0,1);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(color);
-        shapeRenderer.rect(Manager.screenSize.x - healthBarPos.x - healthBarWidth, healthBarPos.y, healthBarWidth * Manager.character.getHealthPercentage(), healthBarHeight);
+        shapeRenderer.rect(x, y, percentage * barWidth, barHeight);
 
+        // Draw surrounding with greyish color
         shapeRenderer.setColor(new Color(0.6f,0.6f,0.6f,1));
         shapeRenderer.set(ShapeRenderer.ShapeType.Line);
         // Draw EXACTLY SAME RECT, now with a line only
-        shapeRenderer.rect(Manager.screenSize.x - healthBarPos.x - healthBarWidth, healthBarPos.y, healthBarWidth, healthBarHeight);
+        shapeRenderer.rect(x, y, barWidth, barHeight);
         shapeRenderer.end();
         // Begin again
         batch.begin();
