@@ -27,6 +27,7 @@ public class Character extends Rectangle {
     private boolean flip = false;
     private boolean grounded = false;
     private boolean isDrilling = false;
+    private Building currentBuilding = null;
     private Block blockToDrill;
     private Inventory inventory;
     private Hud hud;
@@ -249,10 +250,22 @@ public class Character extends Rectangle {
         }
     }
 
+    // Check all buildings if we are currently overlapping them
     private void checkBuildingOverlap(){
-        for(BuildingType buildingType : BuildingType.values()){
-            if(buildingType.building.containsPosition(getCenter())){
-                hud.switchMenu(buildingType.screenType);
+        // If we are still colliding with a building, only check that one and report when we leave.
+        if(currentBuilding != null){
+            if(!currentBuilding.containsPosition(getCenter())){
+                currentBuilding = null;
+                hud.switchMenu(ScreenType.None);
+            }
+        }
+        // We can only enter a building when we are not showing any menus
+        else if(hud.getCurrentScreen() == ScreenType.None) {
+            for (BuildingType buildingType : BuildingType.values()) {
+                if (buildingType.building.containsPosition(getCenter())) {
+                    hud.switchMenu(buildingType.screenType);
+                    currentBuilding = buildingType.building;
+                }
             }
         }
     }
@@ -376,7 +389,10 @@ public class Character extends Rectangle {
             accelerate(Direction.Down);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)){
-            hud.switchMenu(ScreenType.Inventory);
+            hud.toggleMenu(ScreenType.Inventory);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+            hud.switchMenu(ScreenType.None);
         }
 
         if(!isDrilling) {

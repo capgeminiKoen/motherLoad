@@ -105,7 +105,18 @@ public class Hud {
         isShowingHitEffect = true;
     }
 
+    public ScreenType getCurrentScreen(){
+        return currentScreen;
+    }
+
     public void switchMenu(ScreenType screenType){
+        if(currentScreen == screenType){
+            return;
+        }
+        currentScreen = screenType;
+    }
+
+    public void toggleMenu(ScreenType screenType){
         if(currentScreen == screenType){
             currentScreen = ScreenType.None;
             return;

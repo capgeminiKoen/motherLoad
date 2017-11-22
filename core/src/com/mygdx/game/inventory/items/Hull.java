@@ -1,10 +1,29 @@
 package com.mygdx.game.inventory.items;
 
-public class Hull extends Item {
-    public float protection;
+public enum Hull implements UpgradeItem {
 
-    public Hull(int price, String name, float protection){
-        super(price, name);
+    Standard(new Item("Standard Hull", 0), 100),
+    Plated(new Item("Plated Hull", 2500), 130);
+
+    private Item item;
+    private float protection;
+
+    Hull(Item item, float protection) {
+        this.item = item;
         this.protection = protection;
+    }
+
+    @Override
+    public Item getItem() {
+        return item;
+    }
+
+    @Override
+    public String getProperties() {
+        return "Protection level " + protection;
+    }
+
+    public float getProtection() {
+        return protection;
     }
 }

@@ -1,16 +1,19 @@
 package com.mygdx.game.inventory.items;
 
-public abstract class Item {
-    int price;
-    String name;
+public class Item {
+    private String name;
+    private int price;
 
-    public Item(int price, String name){
-        this.price = price;
+    public Item(String name, int price) {
         this.name = name;
+        this.price = price;
     }
 
-    @Override
-    public String toString() {
+    public String getName() {
         return name;
+    }
+
+    public int getPrice() {
+        return price;
     }
 }

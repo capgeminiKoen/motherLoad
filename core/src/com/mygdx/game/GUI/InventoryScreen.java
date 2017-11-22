@@ -54,9 +54,8 @@ public class InventoryScreen extends Screen {
     private void drawInventoryDetails(SpriteBatch batch, float x, float y){
         int index = 0;
         font.draw(batch, "Money: " + Manager.character.getMoney(), x, y - index++ * Manager.fontSize);
-        font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
-        font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
-        font.draw(batch, "Details:", x, y - index++ * Manager.fontSize);
+        font.draw(batch, "Weight:" + inventory.getResourceWeight() + "/" + inventory.getTrunkSize(), x, y - index++ * Manager.fontSize);
+        font.draw(batch, "Current inventory value: " + inventory.getCurrentInventoryValue(), x, y - index++ * Manager.fontSize);
     }
 
     private void drawInventoryItems(SpriteBatch batch, float x, float y){
