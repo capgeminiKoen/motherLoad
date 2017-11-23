@@ -6,8 +6,10 @@ import com.mygdx.game.GUI.InventoryScreen;
 import com.mygdx.game.GUI.ScreenType;
 
 public enum BuildingType {
-    Warehouse(new Warehouse("warehouse.png", new Coordinate(150, 0)), ScreenType.WareHouseMenu),
-    TankStation(new TankStation("tankstation.png", new Coordinate(500, 0)), ScreenType.TankstationMenu);
+
+    Warehouse(new Warehouse("warehouse.png", new Coordinate(150, 0)), ScreenType.WarehouseMenu),
+    TankStation(new TankStation("tankstation.png", new Coordinate(500, 0)), ScreenType.TankstationMenu),
+    TankShop(new TankShop("tankshop.png", new Coordinate(1000,0)), ScreenType.TankMenu);
 
     public Building building;
     public ScreenType screenType;

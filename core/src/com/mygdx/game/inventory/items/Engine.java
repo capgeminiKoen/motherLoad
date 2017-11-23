@@ -2,7 +2,7 @@ package com.mygdx.game.inventory.items;
 
 public enum Engine implements UpgradeItem {
 
-    Standard(new Item("Standard Engine", 0),500, 1000),
+    Standard(new Item("Standard Engine", 0, true),500, 1000),
     Twin_Turbo(new Item("Twin Turbo Engine", 2500), 750,1300);
 
     private Item item;

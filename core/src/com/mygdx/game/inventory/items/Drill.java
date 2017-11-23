@@ -2,7 +2,7 @@ package com.mygdx.game.inventory.items;
 
 public enum Drill implements UpgradeItem {
 
-    Iron(new Item("Iron Drill", 0), 1.0f),
+    Iron(new Item("Iron Drill", 0, true), 1.0f),
     Steel(new Item("Steel Drill", 5000), 1.3f),
     Diamond(new Item("Diamond Drill", 25000), 1.8f);
 

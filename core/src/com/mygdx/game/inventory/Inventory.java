@@ -36,6 +36,7 @@ public class Inventory {
         return hullType.getProtection();
     }
 
+
     public float getAccelerationSpeed(){
         return engineType.getAccelerationSpeed();
     }
@@ -53,6 +54,8 @@ public class Inventory {
     public int getTrunkSize(){
         return trunkType.getSpace();
     }
+
+
 
     public float getMaxSpeed(){
         return engineType.getMaxSpeed();
@@ -84,8 +87,58 @@ public class Inventory {
         return yield;
     }
 
+    public int sellResources(){
+        int total = 0;
+        for(Resource resource : Resource.values()){
+            total += sellResource(resource, true);
+        }
+        return total;
+    }
+
     // Get the current inventory value
     public int getCurrentInventoryValue() {
         return currentInventoryValue;
+    }
+
+    public void setDrillType(Drill drillType) {
+        this.drillType = drillType;
+    }
+
+    public void setEngineType(Engine engineType) {
+        this.engineType = engineType;
+    }
+
+    public void setHullType(Hull hullType) {
+        this.hullType = hullType;
+    }
+
+    public void setTrunkType(Trunk trunkType) {
+        this.trunkType = trunkType;
+    }
+
+    public void setTankType(Tank tankType) {
+        this.tankType = tankType;
+    }
+
+    public void selectItem(UpgradeItem itemToBuy){
+        // If we arrive here, we either already owned the item or have just bought it ;-)
+        // TODO: Cleaner way of doing this
+        // For now, we use a nice-ass switch case to figure out the type of the item.
+        if(itemToBuy instanceof Tank){
+            tankType = (Tank)itemToBuy;
+        }
+        else if(itemToBuy instanceof Hull){
+            hullType = (Hull)itemToBuy;
+        }
+        else if(itemToBuy instanceof Engine){
+            engineType = (Engine)itemToBuy;
+        }
+        else if(itemToBuy instanceof  Trunk){
+            trunkType = (Trunk)itemToBuy;
+        }
+        else if(itemToBuy instanceof Drill){
+            drillType = (Drill)itemToBuy;
+        }
+        // END Ugly switch
     }
 }

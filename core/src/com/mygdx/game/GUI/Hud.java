@@ -31,6 +31,19 @@ public class Hud {
         if(currentScreen != ScreenType.None) {
             currentScreen.getScreen().draw(batch);
         }
+
+        // draw moneys
+        drawMonages(batch);
+    }
+
+    // Draw the amount of the monages in the bottom center of the screen.
+    private void drawMonages(SpriteBatch batch){
+        // Set batch's matrix
+        batch.setProjectionMatrix(Manager.camera.projection);
+        // Draw monages
+        Manager.font.draw(batch, "$ " + Manager.character.getMoney() + ",-", - 50, -Manager.screenSize.y / 2 + 35);
+        // Set batch's matrix
+        batch.setProjectionMatrix(Manager.camera.combined);
     }
 
     private void drawHealthBar(SpriteBatch batch){
@@ -98,6 +111,10 @@ public class Hud {
         }
 
         return;
+    }
+
+    public boolean isInMenu(){
+        return currentScreen != ScreenType.None;
     }
 
     public void showHitEffect(){

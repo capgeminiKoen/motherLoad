@@ -10,11 +10,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.GUI.Hud;
 import com.mygdx.game.GUI.InventoryScreen;
 import com.mygdx.game.GUI.ScreenType;
+import com.mygdx.game.GUI.buildingscreens.ItemScreen;
+import com.mygdx.game.GUI.buildingscreens.TankStationMenu;
+import com.mygdx.game.GUI.buildingscreens.WareHouseMenu;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.buildings.Building;
 import com.mygdx.game.buildings.BuildingType;
 import com.mygdx.game.inventory.Inventory;
+import com.mygdx.game.inventory.items.Item;
+import com.mygdx.game.inventory.items.UpgradeItem;
 import com.mygdx.game.inventory.resources.Resource;
+
+import java.security.Key;
 
 public class Character extends Rectangle {
 
@@ -32,9 +39,9 @@ public class Character extends Rectangle {
     private Inventory inventory;
     private Hud hud;
     private int health = 100, maxHealth = 100;
+    private int money = 500;
     private float fuelLevel;
     private float fuelDeclineRate = 0.1f; // per sec
-    private int money = 0;
 
 
     public void draw(SpriteBatch batch) {
@@ -288,6 +295,29 @@ public class Character extends Rectangle {
         // Do something
     }
 
+    public int getMoney() {
+        return money;
+    }
+
+    // buy an item if we have the monages
+    void buyItem(UpgradeItem itemToBuy) {
+        int price = itemToBuy.getItem().getPrice();
+        if (!itemToBuy.getItem().isAvailable()) {
+            if (price <= money) {
+                // Buy item
+                money -= price;
+                // Let the item know that we bought it, hehe
+                itemToBuy.getItem().setAvailable(true);
+            } else {
+                // NOT ENOUGH MONEYY
+                return;
+            }
+        }
+
+        // Select the item
+        inventory.selectItem(itemToBuy);
+    }
+
     private boolean moveUntillCollision() {
         // If we are moving up, we are only colliding up.
         // If our length > blockSize, we can collide with max length/blockSize + 2 blocks.
@@ -372,28 +402,8 @@ public class Character extends Rectangle {
         // Figure out if we are entering a building
         checkBuildingOverlap();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            accelerate(Direction.Left);
-            flip = textureFacingRight;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            accelerate(Direction.Right);
-            flip = !textureFacingRight;
-        } else {
-            // Dampen X movement!
-            dampenXMovement();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            accelerate(Direction.Up);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            accelerate(Direction.Down);
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.I)){
-            hud.toggleMenu(ScreenType.Inventory);
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            hud.switchMenu(ScreenType.None);
-        }
+        // Handle input
+        handleInput();
 
         if(!isDrilling) {
             // Move
@@ -407,8 +417,104 @@ public class Character extends Rectangle {
         applyGravity();
     }
 
-    public int getMoney() {
-        return money;
+    private void handleInput(){
+
+        if(hud.isInMenu()){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+                if(hud.getCurrentScreen().getScreen() instanceof ItemScreen) {
+                    ItemScreen itemScreen = (ItemScreen)hud.getCurrentScreen().getScreen();
+                    itemScreen.previousItem();
+                }
+            }
+            // If input pressed, go down in menu.
+            if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+                if(hud.getCurrentScreen().getScreen() instanceof ItemScreen) {
+                    ItemScreen itemScreen = (ItemScreen)hud.getCurrentScreen().getScreen();
+                    itemScreen.nextItem();
+                }
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+                // If we are in an itemscreen
+                if(hud.getCurrentScreen().getScreen() instanceof ItemScreen){
+                    ItemScreen itemScreen = (ItemScreen)hud.getCurrentScreen().getScreen();
+                    UpgradeItem upgradeItem = itemScreen.getCurrentlySelectedItem();
+                    buyItem(upgradeItem);
+                }
+                // Buy fuel if enter is hit
+                else if(hud.getCurrentScreen().getScreen() instanceof TankStationMenu){
+                    buyFuel();
+                }
+                else if(hud.getCurrentScreen().getScreen() instanceof WareHouseMenu){
+                    WareHouseMenu currentMenu = (WareHouseMenu)hud.getCurrentScreen().getScreen();
+                    Resource selectedResource = currentMenu.getSelectedResource();
+                    if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)){
+                        // Sell all of this resource
+                        money += inventory.sellResource(selectedResource, true);
+                    }
+                    else if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
+                        money += inventory.sellResources();
+                    }
+                    else {
+                        // Sell 1 of this resource
+                        money += inventory.sellResource(selectedResource, false);
+                    }
+                }
+            }
+        }
+        else{
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                if(hud.getCurrentScreen() == ScreenType.None) {
+                    accelerate(Direction.Up);
+                }
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                if(hud.getCurrentScreen() == ScreenType.None) {
+                    accelerate(Direction.Down);
+                }
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                accelerate(Direction.Left);
+                flip = textureFacingRight;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                accelerate(Direction.Right);
+                flip = !textureFacingRight;
+            }
+        }
+
+        if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            // Dampen X movement!
+            dampenXMovement();
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.I)){
+            hud.toggleMenu(ScreenType.Inventory);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+            hud.switchMenu(ScreenType.None);
+        }
+    }
+
+    private void buyFuel(){
+        float litersToBuy;
+        if(fuelLevel + Manager.minFuelAmount > getMaxFuelLevel()){
+            litersToBuy = getMaxFuelLevel() - fuelLevel;
+        }
+        else{
+            litersToBuy = Manager.minFuelAmount;
+        }
+
+        // Calculate total cost.
+        float totalCost = litersToBuy * Manager.fuelCost;
+        // Buy if we have enough monages.
+        if(money >= totalCost){
+            money -= totalCost;
+            fuelLevel += litersToBuy;
+        }
+        else{
+            // We do not have sufficient funds.
+            return;
+        }
     }
 
     public float getHealthPercentage(){
@@ -416,5 +522,17 @@ public class Character extends Rectangle {
     }
     public float getFuelPercentage() {
         return fuelLevel / inventory.getTankSize();
+    }
+
+    public float getFuelLevel() {
+        return fuelLevel;
+    }
+
+    public float getMaxFuelLevel(){
+        return inventory.getTankSize();
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 }

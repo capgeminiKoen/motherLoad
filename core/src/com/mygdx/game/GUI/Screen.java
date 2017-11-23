@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.Manager;
 
+import static com.mygdx.game.Manager.font;
+
 public abstract class Screen {
 
     protected int width, height;
@@ -42,8 +44,20 @@ public abstract class Screen {
         batch.begin();
     }
 
+    protected void drawTitle(SpriteBatch batch){
+
+        // Set projection matrix to the camera's position
+        batch.setProjectionMatrix(Manager.camera.projection);
+
+        // Draw title
+        font.draw(batch, title, rect.x - Manager.screenSize.x / 2, - Manager.screenSize.y / 2 + rect.y + rect.height);
+
+        // Reset projection matrix
+        batch.setProjectionMatrix(Manager.camera.combined);
+    }
+
     public Screen(){
-        this(100,100,Anchor.CENTER);
+        this(500,400,Anchor.CENTER);
     }
 
     public Screen(int width, int height, Anchor anchor){

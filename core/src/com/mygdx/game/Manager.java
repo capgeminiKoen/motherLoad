@@ -16,4 +16,6 @@ public class Manager {
     public static final BitmapFont font = new BitmapFont();
     public static Camera camera;
     public static Character character;
+    public static float fuelCost = 5.0f;
+    public static float minFuelAmount = 5.0f;
 }

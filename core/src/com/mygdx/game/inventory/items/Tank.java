@@ -21,7 +21,7 @@ public enum Tank implements UpgradeItem {
 
     @Override
     public String getProperties() {
-        return "tank size: " + size;
+        return size + "L";
     }
 
     public float getSize() {
