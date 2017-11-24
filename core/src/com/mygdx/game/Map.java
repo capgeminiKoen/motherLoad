@@ -83,8 +83,15 @@ public class Map {
         for(BuildingType buildingType : BuildingType.values()){
             int block_x = worldToBlockIndexHorizontal(buildingType.building.position.x);
             int block_x_2 = worldToBlockIndexHorizontal(buildingType.building.position.x + buildingType.building.texture.getWidth());
-            for (int i = block_x; i <= block_x_2; i++) {
-                blocks[height - 1][i].blockType = BlockType.Unbreakable;
+            // only do something if the building is not outside of the map
+            if(block_x == -1 || block_x_2 == -1) {
+                System.out.println("Building is out of bounds..");
+            }
+            else{
+                // Fill underground with unbreakable blocks.
+                for (int i = block_x; i <= block_x_2; i++) {
+                    blocks[height - 1][i].blockType = BlockType.Unbreakable;
+                }
             }
         }
     }

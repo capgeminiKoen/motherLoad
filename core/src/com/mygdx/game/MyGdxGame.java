@@ -29,7 +29,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		camera.setToOrtho(false, gameWidth, gameHeight);
 		Manager.camera = camera;
 	    // Create new map
-		map = new Map(100, 15, 0, 100);
+		map = new Map(100, 25, 0, 100);
 		map.initializeBlocks();
 		// Add ref to manager
 		Manager.map = map;

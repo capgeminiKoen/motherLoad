@@ -7,7 +7,7 @@ import com.mygdx.game.Coordinate;
 import com.mygdx.game.GUI.ScreenType;
 import com.mygdx.game.Manager;
 
-public abstract class Building {
+public class Building {
     public Texture texture;
     public Coordinate position;
 
