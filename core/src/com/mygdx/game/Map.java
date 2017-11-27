@@ -1,8 +1,12 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.GUI.background.Background;
+import com.mygdx.game.GUI.background.Sky;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.buildings.Building;
 import com.mygdx.game.buildings.BuildingType;
@@ -16,6 +20,7 @@ public class Map {
     int pixelWidth, pixelHeight;
     private int fillFromLevel;
     private float emptyPercentage = 5.0f;
+    private Sky sky;
     Block[][] blocks;
 
     public Map(int newHeight, int newWidth, int fillMapFromLayer, int blockSize) {
@@ -26,6 +31,15 @@ public class Map {
         width = newWidth;
         pixelWidth = width * blockSize;
         pixelHeight = height * blockSize;
+        sky = new Sky(new Background[]{
+                new Background(-10000, -5000, new Color(0x2b0000ff), new Color(0x550000ff)),
+                new Background(-5000, -2000, new Color(0x550000ff), new Color(0x28170bff)),
+                new Background(-2000, -250, new Color(0x28170bff), new Color(0x502d16ff)),
+                new Background(-250, 0, new Color(0x502d16ff), new Color(0xf8b83aff)),
+                new Background(0, 500, new Color(0xf8b83aff), new Color(0x933835ff)),
+                new Background(500, 1000, new Color(0x933835ff), new Color(0x2a2affff)),
+                new Background(1000, 2000, new Color(0x2a2affff), new Color(0x000000ff))
+        });
     }
 
     public Coordinate getHorizontalMapBounds(){
@@ -131,6 +145,7 @@ public class Map {
     }
 
     // Returns true when there are blocks within the range of [block1 -> block2].
+
     public boolean containsBlock(Coordinate block1, Coordinate block2) {
         // Loops through the blocks and returns true if one is true.
         int i_start = block1.x, i_end = block2.x;
@@ -163,8 +178,8 @@ public class Map {
         }
         return false;
     }
-
     // Determine if player transitions to new block column
+
     public boolean isNewBlockColumnHorizontal(float x_now, float x_next) {
         int x_now_int = Math.round((x_now < x_next) ? x_now : x_next);
         int x_next_int = Math.round((x_next > x_now) ? x_next : x_now);
@@ -173,8 +188,8 @@ public class Map {
         int nextXCoordinate = worldToBlockIndexHorizontal(x_next_int);
         return (currentXCoordinate != nextXCoordinate);
     }
-
     // Determine if player transitions to new block row
+
     public boolean isNewBlockColumnVertical(float y_now, float y_next) {
         int y_now_int = Math.round((y_now < y_next) ? y_now : y_next);
         int y_next_int = Math.round((y_next > y_now) ? y_next : y_now);
@@ -183,24 +198,24 @@ public class Map {
         int nextYCoordinate = worldToBlockIndexVertical(y_next_int);
         return (currentYCoordinate != nextYCoordinate);
     }
-
     // Get the block x index based on the world x pos
+
     public int worldToBlockIndexHorizontal(int xPos_world) {
         // Block [0,0] is from [0,0] to [blockSize-1, blockSize-1]
         int index = xPos_world / blockSize;
         if (index < 0 || index >= width) index = Utility.NOT_FOUND;
         return index;
     }
-
     // Get the block y index based on the world y pos
+
     public int worldToBlockIndexVertical(int yPos_world) {
         // NO CAPS ON Y POS!!! :)
         int index = yPos_world / blockSize;
         if(index < 0 || index >= height) index = Utility.NOT_FOUND;
         return index;
     }
-
     // Retrieves block on the basis of the inGame coordinates
+
     public Block getBlockByCoords(int x, int y) {
         // Block [0,0] is from [0,0] to [blockSize-1, blockSize-1]
         int blockx = x / blockSize;
@@ -214,7 +229,6 @@ public class Map {
         // Retrieve Rect
         return blocks[blocky][blockx];
     }
-
     public Block getBlockByCoords(Vector2 coords) {
         return getBlockByCoords(Math.round(coords.x), Math.round(coords.y));
     }
@@ -224,12 +238,16 @@ public class Map {
     }
 
     public void draw(SpriteBatch batch) {
+        // Start by drawing the sky
+        sky.draw(batch);
+
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 blocks[i][j].draw(batch);
             }
         }
         drawBuildings(batch);
+
     }
 
     private void drawBuildings(SpriteBatch batch){
@@ -238,5 +256,4 @@ public class Map {
             buildingType.building.draw(batch);
         }
     }
-
 }

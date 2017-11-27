@@ -34,6 +34,9 @@ public class Hud {
 
         // draw moneys
         drawMonages(batch);
+
+        // Draw altimeter
+        drawAltimeter(batch);
     }
 
     // Draw the amount of the monages in the bottom center of the screen.
@@ -42,6 +45,16 @@ public class Hud {
         batch.setProjectionMatrix(Manager.camera.projection);
         // Draw monages
         Manager.font.draw(batch, "$ " + Manager.character.getMoney() + ",-", - 50, -Manager.screenSize.y / 2 + 35);
+        // Set batch's matrix
+        batch.setProjectionMatrix(Manager.camera.combined);
+    }
+
+    // Draw the height we're at
+    private void drawAltimeter(SpriteBatch batch){
+        // Set batch's matrix
+        batch.setProjectionMatrix(Manager.camera.projection);
+        // Draw monages
+        Manager.font.draw(batch, String.format("Height: %.2f m", (Manager.character.getCurrentHeight() / 10)), 100, -Manager.screenSize.y / 2 + 35);
         // Set batch's matrix
         batch.setProjectionMatrix(Manager.camera.combined);
     }

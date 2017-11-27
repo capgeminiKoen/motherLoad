@@ -495,6 +495,10 @@ public class Character extends Rectangle {
         }
     }
 
+    public float getCurrentHeight(){
+        return y - Manager.map.pixelHeight;
+    }
+
     private void buyFuel(){
         float litersToBuy;
         if(fuelLevel + Manager.minFuelAmount > getMaxFuelLevel()){
