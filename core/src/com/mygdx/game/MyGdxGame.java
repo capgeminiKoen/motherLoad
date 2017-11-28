@@ -2,13 +2,11 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Utility.Utility;
-import com.mygdx.game.inventory.resources.Resource;
+import com.mygdx.game.character.Character;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private int gameWidth = 1200;
@@ -39,7 +37,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Blend for HUD
 		batch.enableBlending();
 		// Create new character
-		character = new Character("heli.gif", false);
+		character = new Character(new String[] {"heli/frame0.gif", "heli/frame1.gif"}, 0.05f, false);
 		// Get map bounds;
         Coordinate map_hor = map.getHorizontalMapBounds(), map_vert = map.getVerticalMapBounds();
 		character.y = map_vert.y;
@@ -54,14 +52,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void render () {
 		// THIS IS THE MAIN GAME LOOP!
 
+		// Run update cycle BEFORE setting the projection matrix!!
+		update();
+
 		// Set projection matrix for the spriteBatch
 		batch.setProjectionMatrix(camera.combined);
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		// Run update cycle
-		update();
 
 		// Begin drawing the batch
 		batch.begin();

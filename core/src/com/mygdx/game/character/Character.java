@@ -1,12 +1,14 @@
-package com.mygdx.game;
+package com.mygdx.game.character;
 
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.*;
 import com.mygdx.game.GUI.Hud;
 import com.mygdx.game.GUI.InventoryScreen;
 import com.mygdx.game.GUI.ScreenType;
@@ -25,11 +27,12 @@ import java.security.Key;
 
 public class Character extends Rectangle {
 
+    private float gameTime = 0.0f;
     private Vector2 currentMovementSpeed = new Vector2(0, 0);
     private Vector2 drillingStartPosition;
     private float dampenSpeedAir = 100, dampenSpeedGround = 400;
     private float currentDrillingTime = 0.0f;
-    private Texture texture;
+    private Animation<Texture> characterAnimation;
     private boolean textureFacingRight = false;
     private boolean flip = false;
     private boolean grounded = false;
@@ -41,26 +44,36 @@ public class Character extends Rectangle {
     private int health = 100, maxHealth = 100;
     private int money = 500;
     private float fuelLevel;
-    private float fuelDeclineRate = 0.1f; // per sec
+    private float fuelDeclineRate = 0.5f; // per sec
 
 
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, flip ? x + width : x, y, flip ? -width : width, height);
+        batch.draw(characterAnimation.getKeyFrame(gameTime), flip ? x + width : x, y, flip ? -width : width, height);
         hud.draw(batch);
     }
 
-    public Character(String texturePath) {
-         texture = new Texture(texturePath);
-         inventory = new Inventory();
-         // Initialize fuelLevel to its maximum.
-         fuelLevel = inventory.getTankSize();
-         hud = new Hud();
-         // Set inventory of character
+    private Character(){
+        inventory = new Inventory();
+        // Initialize fuelLevel to its maximum.
+        fuelLevel = inventory.getTankSize();
+        hud = new Hud();
+        // Set inventory of character
         ((InventoryScreen) ScreenType.Inventory.getScreen()).setInventory(inventory);
     }
-    public Character(String texturePath, boolean left){
-        this(texturePath);
+
+    public Character(String[] textures, float animationSpeed, boolean left){
+        this();
         textureFacingRight = !left;
+        // Fill texture list
+        Texture[] textureList = new Texture[textures.length];
+        for (int i = 0; i < textures.length; i++) {
+            textureList[i] = new Texture(textures[i]);
+        }
+        // Make new animation
+        characterAnimation = new Animation<Texture>(animationSpeed, textureList);
+        // Set mode to loop :D
+        characterAnimation.setPlayMode(Animation.PlayMode.LOOP);
+
     }
 
     private void accelerate(Direction direction) {
@@ -395,6 +408,9 @@ public class Character extends Rectangle {
     }
 
     public void update() {
+
+        // Update the gameTime
+        gameTime += Gdx.graphics.getDeltaTime();
 
         // update fuel levels
         reduceFuel();

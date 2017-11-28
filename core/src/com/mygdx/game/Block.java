@@ -8,8 +8,8 @@ import com.sun.org.apache.regexp.internal.RE;
 
 public class Block extends Rectangle{
 
-    BlockType blockType;
-    Resource resource = Resource.None;
+    public BlockType blockType;
+    public Resource resource = Resource.None;
     float crackLevel = 40, severeCrackLevel = 70;
 
     public Block(BlockType newBlockType, int x, int y, int blockSize, Resource resource){

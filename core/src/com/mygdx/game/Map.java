@@ -17,7 +17,7 @@ public class Map {
 
     int height, width;
     int blockSize;
-    int pixelWidth, pixelHeight;
+    public int pixelWidth, pixelHeight;
     private int fillFromLevel;
     private float emptyPercentage = 5.0f;
     private Sky sky;
@@ -31,6 +31,7 @@ public class Map {
         width = newWidth;
         pixelWidth = width * blockSize;
         pixelHeight = height * blockSize;
+        // Make nice-ass sky
         sky = new Sky(new Background[]{
                 new Background(-10000, -5000, new Color(0x2b0000ff), new Color(0x550000ff)),
                 new Background(-5000, -2000, new Color(0x550000ff), new Color(0x28170bff)),
