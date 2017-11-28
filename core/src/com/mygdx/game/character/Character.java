@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.*;
@@ -37,18 +38,25 @@ public class Character extends Rectangle {
     private boolean flip = false;
     private boolean grounded = false;
     private boolean isDrilling = false;
+    private boolean dead = false;
     private Building currentBuilding = null;
     private Block blockToDrill;
     private Inventory inventory;
     private Hud hud;
-    private int health = 100, maxHealth = 100;
+    private float health = 10, maxHealth = 100;
     private int money = 500;
     private float fuelLevel;
     private float fuelDeclineRate = 0.5f; // per sec
 
 
     public void draw(SpriteBatch batch) {
-        batch.draw(characterAnimation.getKeyFrame(gameTime), flip ? x + width : x, y, flip ? -width : width, height);
+        if(dead){
+            TextureRegion textureRegion = Manager.explosionAnimation.getKeyFrame(gameTime);
+            batch.draw(textureRegion, x, y, textureRegion.getRegionWidth(), textureRegion.getRegionHeight());
+        }
+        else {
+            batch.draw(characterAnimation.getKeyFrame(gameTime), flip ? x + width : x, y, flip ? -width : width, height);
+        }
         hud.draw(batch);
     }
 
@@ -290,7 +298,9 @@ public class Character extends Rectangle {
         }
     }
 
+
     private void doDamage(float amount){
+        System.out.println("Recieved damage :(");
         // Calculate amount using hull strength
         amount = (amount * 5) / inventory.getHullStrength();
         health -= amount;
@@ -304,8 +314,9 @@ public class Character extends Rectangle {
     }
 
     private void die(){
-        // TODO
-        // Do something
+        dead = true;
+        // Reset gameTime for the animation!
+        gameTime = 0;
     }
 
     public int getMoney() {
@@ -409,8 +420,11 @@ public class Character extends Rectangle {
 
     public void update() {
 
+
         // Update the gameTime
         gameTime += Gdx.graphics.getDeltaTime();
+
+        if(dead) return;
 
         // update fuel levels
         reduceFuel();

@@ -4,7 +4,10 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.character.Character;
 
@@ -46,7 +49,27 @@ public class MyGdxGame extends ApplicationAdapter {
 		character.width = 80;
 		// Set character in the manager
 		Manager.character = character;
+
+		Manager.explosionAnimation = buildExplosionAnimation("animations/explosion/spritesheet.png", 9,9);
 	}
+
+    private Animation<TextureRegion> buildExplosionAnimation(String animationSheet, int FRAME_COLS, int FRAME_ROWS){
+        Texture explosionSheet = new Texture(animationSheet);
+        TextureRegion[][] tmp = TextureRegion.split(explosionSheet,
+                explosionSheet.getWidth() / FRAME_COLS,
+                explosionSheet.getHeight() / FRAME_ROWS);
+
+        TextureRegion[] explosionFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+        int index = 0;
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                explosionFrames[index++] = tmp[i][j];
+            }
+        }
+
+        return new Animation<TextureRegion>(0.025f, explosionFrames);
+
+    }
 
 	@Override
 	public void render () {

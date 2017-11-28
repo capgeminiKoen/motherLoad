@@ -1,7 +1,10 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.character.Character;
 
@@ -19,4 +22,5 @@ public class Manager {
     public static Character character;
     public static float fuelCost = 5.0f;
     public static float minFuelAmount = 5.0f;
+    public static Animation<TextureRegion> explosionAnimation;
 }
