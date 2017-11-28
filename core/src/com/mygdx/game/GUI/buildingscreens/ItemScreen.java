@@ -7,16 +7,24 @@ import com.mygdx.game.GUI.Screen;
 import com.mygdx.game.Manager;
 import com.mygdx.game.inventory.items.UpgradeItem;
 
-public abstract class ItemScreen extends Screen {
+public class ItemScreen extends Screen {
 
     private int rowHeight = 40;
     protected UpgradeItem[] upgradeItems;
     protected String valueType;
     protected int currentItem = 0;
 
-    public ItemScreen() {
+    protected ItemScreen() {
         super();
         upgradeItems = getUpgradeItems();
+    }
+
+    // Generic solution :)
+    public ItemScreen(UpgradeItem[] upgradeItems, String title, String valueType){
+        super();
+        this.upgradeItems = upgradeItems;
+        this.title = title;
+        this.valueType = valueType;
     }
 
     public ItemScreen(int width, int height, Anchor anchor) {
@@ -49,7 +57,9 @@ public abstract class ItemScreen extends Screen {
         drawTitle(batch);
     }
 
-    protected abstract UpgradeItem[] getUpgradeItems();
+    protected UpgradeItem[] getUpgradeItems(){
+        return upgradeItems;
+    }
 
     // Get currently selected item.
     public UpgradeItem getCurrentlySelectedItem(){

@@ -86,10 +86,10 @@ public class Map {
                 }
             }
         }
-        // Fill empty layers
+        // Fill uppermost layers with normal blocks
         for(int i = height - fillFromLevel; i < height; i++){
             for (int j = 0; j < width; j++) {
-                blocks[i][j] = new Block(BlockType.Empty, j, i, blockSize, Resource.None);
+                blocks[i][j] = new Block(BlockType.Normal, j, i, blockSize, Resource.None);
             }
         }
 
