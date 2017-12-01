@@ -566,6 +566,7 @@ public class Character extends Rectangle {
     /**
      *
      * @return Height corrected for the height of the camera pos (actual 0-based).
+     * Normally, this would be the same as camera.position ;P
      */
     public float getCorrectedHeight(){
         return y - Manager.map.pixelHeight + height / 2;

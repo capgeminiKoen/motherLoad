@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.character.Character;
 import com.mygdx.game.map.Map;
 
@@ -23,4 +24,9 @@ public class Manager {
     public static float fuelCost = 5.0f;
     public static float minFuelAmount = 5.0f;
     public static Animation<TextureRegion> explosionAnimation;
+
+    public static Vector2 getCorrectedCameraPosition(){
+        Vector3 cameraPosition = camera.position;
+        return new Vector2(cameraPosition.x, cameraPosition.y - map.pixelHeight);
+    }
 }

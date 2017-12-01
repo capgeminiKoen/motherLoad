@@ -23,7 +23,7 @@ public class Sky extends BackgroundSet{
     public void draw(ShapeRenderer shapeRenderer){
         super.draw(shapeRenderer);
         // Draw sun
-        sun.draw(shapeRenderer, Manager.character.getcurrentPos(), timeOfDay);
+        sun.draw(shapeRenderer, Manager.getCorrectedCameraPosition(), timeOfDay);
     }
 
     /**

@@ -120,22 +120,35 @@ public class Map {
         return getBlockByIndex(block_x, block_y);
     }
 
-    public Coordinate getBlockIndexByCoords(int x, int y) {
+    /**
+     * Function that gets the block index as a coordinate.
+     * @param x x coordinate (world coordinate)
+     * @param y y coordinate (world coordinate)
+     * @param clip Whether or not to clip the output to the bounds of the map. if width > 0 && height > 0, this will be
+     *             usable to index a block immediately
+     * @return Coordinate of the block that falls in these world coordinates.
+     */
+    public Coordinate getBlockIndexByCoords(int x, int y, boolean clip) {
         // Block [0,0] is from [0,0] to [blockSize-1, blockSize-1]
         int blockx = x / blockSize;
         int blocky = y / blockSize;
         // Clamp bottom
-        if (blockx < 0) blockx = Utility.NOT_FOUND;
-        if (blocky < 0) blocky = Utility.NOT_FOUND;
+        if (blockx < 0) blockx = clip ? 0 : Utility.NOT_FOUND;
+        if (blocky < 0) blocky = clip ? 0 : Utility.NOT_FOUND;
         // Clamp top
-        if (blockx >= width) blockx = Utility.NOT_FOUND;
-        if (blocky >= height) blocky = Utility.NOT_FOUND;
+        if (blockx >= width) blockx = clip ? width - 1 : Utility.NOT_FOUND;
+        if (blocky >= height) blocky = clip ? height - 1 : Utility.NOT_FOUND;
         // Retrieve Rect
         return new Coordinate(blockx, blocky);
     }
-
+    public Coordinate getBlockIndexByCoords(int x, int y){
+        return getBlockIndexByCoords(x, y, false);
+    }
+    public Coordinate getBlockIndexByCoords(Vector2 coords, boolean clip) {
+        return getBlockIndexByCoords(Math.round(coords.x), Math.round(coords.y), clip);
+    }
     public Coordinate getBlockIndexByCoords(Vector2 coords) {
-        return getBlockIndexByCoords(Math.round(coords.x), Math.round(coords.y));
+        return getBlockIndexByCoords(coords, false);
     }
 
     public Block getBlockByIndex(Coordinate coords) {
@@ -245,13 +258,32 @@ public class Map {
         // Start by drawing the sky
         background.draw(batch);
 
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        // Draw blocks
+        drawBlocks(batch);
+        // Draw buildings
+        drawBuildings(batch);
+
+    }
+
+    private void drawBlocks(SpriteBatch batch){
+
+        // Determine bounds of camera
+        Vector2 cameraPos = new Vector2(Manager.camera.position.x, Manager.camera.position.y);
+        Vector2 leftTop = new Vector2(cameraPos.x - Manager.screenSize.x / 2,
+                cameraPos.y + Manager.screenSize.y / 2);
+        Vector2 rightBot = new Vector2(cameraPos.x + Manager.screenSize.x / 2,
+                cameraPos.y - Manager.screenSize.y / 2);
+
+        // Get actual coordinates
+        Coordinate leftTopCoordinate = getBlockIndexByCoords(leftTop, true);
+        Coordinate rightBotCoordinate = getBlockIndexByCoords(rightBot, true);
+
+        // Actually fill blocks
+        for (int i = rightBotCoordinate.y; i <= leftTopCoordinate.y; i++) {
+            for (int j = leftTopCoordinate.x; j <= rightBotCoordinate.x; j++) {
                 blocks[i][j].draw(batch);
             }
         }
-        drawBuildings(batch);
-
     }
 
     private void drawBuildings(SpriteBatch batch){
