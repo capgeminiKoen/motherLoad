@@ -1,6 +1,6 @@
 package com.mygdx.game.GUI;
 
-import com.mygdx.game.GUI.buildingscreens.*;
+import com.mygdx.game.GUI.menus.*;
 import com.mygdx.game.inventory.items.*;
 
 public enum ScreenType {
@@ -12,7 +12,8 @@ public enum ScreenType {
     EngineMenu(new ItemScreen(Engine.values(), "Engines", "Engine"), true),
     TrunkMenu(new ItemScreen(Trunk.values(), "Trunks", "Trunk Size"), true),
     DrillMenu(new ItemScreen(Drill.values(), "Drills", "Drilling speed"), true),
-    HullMenu(new ItemScreen(Hull.values(), "Hulls", "Hull Strength"), true);
+    HullMenu(new ItemScreen(Hull.values(), "Hulls", "Hull Strength"), true),
+    MainMenu(new MainMenu());
 
     public Screen getScreen() {
         return screen;

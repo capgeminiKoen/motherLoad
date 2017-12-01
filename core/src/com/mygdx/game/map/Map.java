@@ -1,17 +1,16 @@
-package com.mygdx.game;
+package com.mygdx.game.map;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.GUI.background.Background;
-import com.mygdx.game.GUI.background.Sky;
+import com.mygdx.game.map.block.Block;
+import com.mygdx.game.map.block.BlockType;
+import com.mygdx.game.Utility.Coordinate;
+import com.mygdx.game.GUI.background.*;
+import com.mygdx.game.Utility.Manager;
 import com.mygdx.game.Utility.Utility;
-import com.mygdx.game.buildings.Building;
 import com.mygdx.game.buildings.BuildingType;
 import com.mygdx.game.inventory.resources.Resource;
-import com.sun.org.apache.regexp.internal.RE;
 
 public class Map {
 
@@ -20,7 +19,7 @@ public class Map {
     public int pixelWidth, pixelHeight;
     private int fillFromLevel;
     private float emptyPercentage = 5.0f;
-    private Sky sky;
+    private Background background;
     Block[][] blocks;
 
     public Map(int newHeight, int newWidth, int fillMapFromLayer, int blockSize) {
@@ -32,15 +31,19 @@ public class Map {
         pixelWidth = width * blockSize;
         pixelHeight = height * blockSize;
         // Make nice-ass sky
-        sky = new Sky(new Background[]{
-                new Background(-10000, -5000, new Color(0x2b0000ff), new Color(0x550000ff)),
-                new Background(-5000, -2000, new Color(0x550000ff), new Color(0x28170bff)),
-                new Background(-2000, -250, new Color(0x28170bff), new Color(0x502d16ff)),
-                new Background(-250, 0, new Color(0x502d16ff), new Color(0xf8b83aff)),
-                new Background(0, 500, new Color(0xf8b83aff), new Color(0x933835ff)),
-                new Background(500, 1000, new Color(0x933835ff), new Color(0x2a2affff)),
-                new Background(1000, 2000, new Color(0x2a2affff), new Color(0x000000ff))
+        Sky sky = new Sky(new BackgroundGradient[]{
+                new BackgroundGradient(0, 500, new Color(0xf8b83aff), new Color(0x933835ff)),
+                new BackgroundGradient(500, 1000, new Color(0x933835ff), new Color(0x2a2affff)),
+                new BackgroundGradient(1000, 2000, new Color(0x2a2affff), new Color(0x000000ff))
         });
+        UndergroundBackground undergroundBackground = new UndergroundBackground(new BackgroundGradient[]{
+                new BackgroundGradient(-10000, -5000, new Color(0x2b0000ff), new Color(0x550000ff)),
+                new BackgroundGradient(-5000, -2000, new Color(0x550000ff), new Color(0x28170bff)),
+                new BackgroundGradient(-2000, -250, new Color(0x28170bff), new Color(0x502d16ff)),
+                new BackgroundGradient(-250, 0, new Color(0x502d16ff), new Color(0xf8b83aff))
+        });
+        background = new Background(new BackgroundSet[] {sky, undergroundBackground});
+
     }
 
     public Coordinate getHorizontalMapBounds(){
@@ -67,10 +70,10 @@ public class Map {
         return Manager.random.nextFloat() * 100 < emptyPercentage;
     }
 
+    /**
+     * Initializes all blocks; starting from fillFromLevel.
+     */
     public void initializeBlocks() {
-        // For now, lets make all blocks normal at the start.
-        // TODO
-        // In the future, some have to be different types, as well as empty, etc.
         for (int i = 0; i < height - fillFromLevel; i++) {
             for (int j = 0; j < width; j++) {
                 if(i == height - fillFromLevel - 1){
@@ -240,7 +243,7 @@ public class Map {
 
     public void draw(SpriteBatch batch) {
         // Start by drawing the sky
-        sky.draw(batch);
+        background.draw(batch);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -256,5 +259,10 @@ public class Map {
             // Draw each building
             buildingType.building.draw(batch);
         }
+    }
+
+    // Cascades
+    public void update(){
+        background.update();
     }
 }

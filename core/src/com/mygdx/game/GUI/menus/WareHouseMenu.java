@@ -1,10 +1,9 @@
-package com.mygdx.game.GUI.buildingscreens;
+package com.mygdx.game.GUI.menus;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.GUI.Screen;
-import com.mygdx.game.Manager;
+import com.mygdx.game.Utility.Manager;
 import com.mygdx.game.inventory.resources.Resource;
 
 public class WareHouseMenu extends Screen {
@@ -14,12 +13,18 @@ public class WareHouseMenu extends Screen {
     int rowHeight = 40;
     int currentItem = 1;
     int resourceAmount[];
-    Resource[] resources;
+    Resource[] resources = Resource.values();
 
     // Standard window is 500x400.
     public WareHouseMenu() {
         title = "Warehouse";
         columnWidth = width / 5;
+    }
+
+    // Should be called by inventory.
+    public void setResourceAmount(int[] resourceAmount){
+        // Get the resourceamount and resources.
+        this.resourceAmount = resourceAmount;
     }
 
     @Override
@@ -31,13 +36,12 @@ public class WareHouseMenu extends Screen {
         // Draw some info
         drawInfo(batch);
 
-        // Get the resourceamount and resources.
-        // TODO: This can be done once, but NOT in the constructor!!
-        resourceAmount = Manager.character.getInventory().getResources();
-        resources = Resource.values();
-
         // Draw resources
         drawResources(batch);
+    }
+
+    public void changeTo(){
+        changeItem(true);
     }
 
     // draw all resources

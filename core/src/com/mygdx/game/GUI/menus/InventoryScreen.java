@@ -1,13 +1,15 @@
-package com.mygdx.game.GUI;
+package com.mygdx.game.GUI.menus;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.game.Manager;
+import com.mygdx.game.GUI.Anchor;
+import com.mygdx.game.GUI.Screen;
+import com.mygdx.game.Utility.Manager;
 import com.mygdx.game.inventory.Inventory;
 import com.mygdx.game.inventory.resources.Resource;
 
-import static com.mygdx.game.Manager.font;
+import static com.mygdx.game.Utility.Manager.font;
 
 public class InventoryScreen extends Screen {
 
@@ -94,7 +96,5 @@ public class InventoryScreen extends Screen {
 
         // Start batch again
         batch.begin();
-
-
     }
 }

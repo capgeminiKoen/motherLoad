@@ -1,10 +1,10 @@
-package com.mygdx.game.GUI.buildingscreens;
+package com.mygdx.game.GUI.menus;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.GUI.Anchor;
 import com.mygdx.game.GUI.Screen;
-import com.mygdx.game.Manager;
+import com.mygdx.game.Utility.Manager;
 import com.mygdx.game.inventory.items.UpgradeItem;
 
 public class ItemScreen extends Screen {

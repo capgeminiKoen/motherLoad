@@ -1,7 +1,6 @@
 package com.mygdx.game.buildings;
 
-import com.mygdx.game.Coordinate;
-import com.mygdx.game.GUI.ScreenType;
+import com.mygdx.game.Utility.Coordinate;
 
 public class Warehouse extends Building {
 

@@ -3,9 +3,8 @@ package com.mygdx.game.buildings;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.Coordinate;
-import com.mygdx.game.GUI.ScreenType;
-import com.mygdx.game.Manager;
+import com.mygdx.game.Utility.Coordinate;
+import com.mygdx.game.Utility.Manager;
 
 public class Building {
     public Texture texture;

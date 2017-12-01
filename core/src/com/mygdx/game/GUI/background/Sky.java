@@ -1,38 +1,38 @@
 package com.mygdx.game.GUI.background;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.game.Manager;
+import com.mygdx.game.Utility.Manager;
 
 /**
- * A sky class consists of different backgrounds which all
+ * A sky class consists of different backgroundGradients which all
  */
-public class Sky {
+public class Sky extends BackgroundSet{
 
-    private Background[] backgrounds;
+    private BackgroundGradient[] backgroundGradients;
+    private Sun sun;
+    private float timeOfDay = 0.0f;
+    private float dayLengthInMinutes = 2.0f;
 
-    public Sky (Background[] backgrounds){
-        this.backgrounds = backgrounds;
+    public Sky(BackgroundGradient[] backgroundGradients) {
+        super(backgroundGradients);
+        sun = new Sun();
     }
 
-    public void draw(SpriteBatch spriteBatch){
+    @Override
+    public void draw(ShapeRenderer shapeRenderer){
+        super.draw(shapeRenderer);
+        // Draw sun
+        sun.draw(shapeRenderer, Manager.character.getcurrentPos(), timeOfDay);
+    }
 
-        // Draw the background
-        spriteBatch.end();
-
-        // Create ShapeRenderer for all our backgrounds
-        ShapeRenderer shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setAutoShapeType(true);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        // Draw backgrounds
-        for(Background bg : backgrounds){
-            bg.draw(shapeRenderer, Manager.character.getCurrentHeight());
-        }
-
-        // End shapeRenderer and begin spritebatch again
-        shapeRenderer.end();
-        spriteBatch.begin();
+    /**
+     * Update function. updates time.
+     */
+    @Override
+    public void update(){
+        timeOfDay += Gdx.graphics.getDeltaTime() / (dayLengthInMinutes * 60);
+        timeOfDay %= 1.0f;
     }
 
 }

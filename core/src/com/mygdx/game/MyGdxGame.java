@@ -8,8 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.mygdx.game.GUI.Screen;
+import com.mygdx.game.GUI.ScreenType;
+import com.mygdx.game.Utility.Coordinate;
+import com.mygdx.game.Utility.Manager;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.character.Character;
+import com.mygdx.game.map.Map;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private int gameWidth = 1200;
@@ -41,12 +46,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.enableBlending();
 		// Create new character
 		character = new Character(new String[] {"heli/frame0.gif", "heli/frame1.gif"}, 0.05f, false);
-		// Get map bounds;
-        Coordinate map_hor = map.getHorizontalMapBounds(), map_vert = map.getVerticalMapBounds();
-		character.y = map_vert.y;
-		character.x = map_hor.y / 2;
-		character.height = 35;
-		character.width = 80;
 		// Set character in the manager
 		Manager.character = character;
 
@@ -95,6 +94,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public void update(){
 		// Update the character
+        map.update();
 		character.update();
 		updateCamera();
 	}
@@ -103,14 +103,29 @@ public class MyGdxGame extends ApplicationAdapter {
 		// Update camera
 		// Follow player -> bound by mapsize
 		Coordinate mapBounds = map.getHorizontalMapBounds();
-		float cameraX = Utility.clamp(character.getX(),
+		float cameraX = Utility.clamp(character.getCenter().x,
 				mapBounds.x + camera.viewportWidth / 2,
 				mapBounds.y - camera.viewportWidth / 2);
-		float cameraY = character.getY();
+		float cameraY = character.getCenter().y;
 		camera.position.set(cameraX, cameraY, 0);
 		camera.update();
 	}
-	
+
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		Manager.screenSize.x = width;
+		Manager.screenSize.y = height;
+		camera.setToOrtho(false, width, height);
+		// Reset all rects of menus.
+		for(ScreenType screenType : ScreenType.values()){
+            Screen screen = screenType.getScreen();
+            if(screen != null) {
+                screen.redrawRect();
+            }
+        }
+	}
+
 	@Override
 	public void dispose () {
 		batch.dispose();

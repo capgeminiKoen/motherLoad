@@ -1,8 +1,6 @@
 package com.mygdx.game.buildings;
 
-import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.Coordinate;
-import com.mygdx.game.GUI.ScreenType;
+import com.mygdx.game.Utility.Coordinate;
 
 public class TankStation extends Building {
 

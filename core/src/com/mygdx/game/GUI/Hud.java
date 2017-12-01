@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.game.Coordinate;
-import com.mygdx.game.Manager;
+import com.mygdx.game.Utility.Coordinate;
+import com.mygdx.game.GUI.menus.WareHouseMenu;
+import com.mygdx.game.Utility.Manager;
 
 public class Hud {
 
@@ -142,6 +143,11 @@ public class Hud {
     public void switchMenu(ScreenType screenType){
         if(currentScreen == screenType){
             return;
+        }
+        if(screenType.getScreen() instanceof WareHouseMenu){
+            // Update the warehouse menu.
+            WareHouseMenu menu = (WareHouseMenu)screenType.getScreen();
+            menu.changeTo();
         }
         currentScreen = screenType;
     }

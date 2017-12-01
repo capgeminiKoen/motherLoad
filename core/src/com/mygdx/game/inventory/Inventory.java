@@ -1,5 +1,7 @@
 package com.mygdx.game.inventory;
 
+import com.mygdx.game.GUI.ScreenType;
+import com.mygdx.game.GUI.menus.WareHouseMenu;
 import com.mygdx.game.inventory.items.*;
 import com.mygdx.game.inventory.resources.Resource;
 
@@ -26,6 +28,8 @@ public class Inventory {
         for (int i = 0; i < resources.length; i++) {
             resources[i] = 0;
         }
+        // Set the inventory to the warehouseMenu.
+        ((WareHouseMenu)ScreenType.WarehouseMenu.getScreen()).setResourceAmount(resources);
     }
 
     public float getDrillSpeed(){
@@ -62,10 +66,16 @@ public class Inventory {
     }
 
     // Add a resource
+    // Only add when we have space left!
     public void addResource(Resource resource){
-        resources[resource.id]++;
-        currentWeight += resource.weight;
-        currentInventoryValue += resource.value;
+        if(currentWeight + resource.weight > trunkType.getSpace()){
+            return;
+        }
+        else {
+            resources[resource.id]++;
+            currentWeight += resource.weight;
+            currentInventoryValue += resource.value;
+        }
     }
 
     // Sell resources and return the yield

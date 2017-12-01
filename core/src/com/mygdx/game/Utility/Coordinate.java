@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Utility;
 
 public class Coordinate {
     public int x, y;
@@ -6,8 +6,6 @@ public class Coordinate {
     public Coordinate(int newX, int newY) {
         x = newX;
         y = newY;
-
-
     }
 
     @Override

@@ -1,10 +1,9 @@
-package com.mygdx.game;
+package com.mygdx.game.map.block;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.inventory.resources.Resource;
-import com.sun.org.apache.regexp.internal.RE;
 
 public class Block extends Rectangle{
 

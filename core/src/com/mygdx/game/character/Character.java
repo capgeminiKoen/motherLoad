@@ -9,22 +9,24 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.*;
+import com.mygdx.game.GUI.Anchor;
 import com.mygdx.game.GUI.Hud;
-import com.mygdx.game.GUI.InventoryScreen;
+import com.mygdx.game.GUI.menus.InventoryScreen;
 import com.mygdx.game.GUI.ScreenType;
-import com.mygdx.game.GUI.buildingscreens.ItemScreen;
-import com.mygdx.game.GUI.buildingscreens.TankStationMenu;
-import com.mygdx.game.GUI.buildingscreens.WareHouseMenu;
+import com.mygdx.game.GUI.menus.ItemScreen;
+import com.mygdx.game.GUI.menus.TankStationMenu;
+import com.mygdx.game.GUI.menus.WareHouseMenu;
+import com.mygdx.game.Utility.Coordinate;
+import com.mygdx.game.Utility.Direction;
+import com.mygdx.game.Utility.Manager;
 import com.mygdx.game.Utility.Utility;
 import com.mygdx.game.buildings.Building;
 import com.mygdx.game.buildings.BuildingType;
 import com.mygdx.game.inventory.Inventory;
-import com.mygdx.game.inventory.items.Item;
 import com.mygdx.game.inventory.items.UpgradeItem;
 import com.mygdx.game.inventory.resources.Resource;
-
-import java.security.Key;
+import com.mygdx.game.map.block.Block;
+import com.mygdx.game.map.block.BlockType;
 
 public class Character extends Rectangle {
 
@@ -43,22 +45,10 @@ public class Character extends Rectangle {
     private Block blockToDrill;
     private Inventory inventory;
     private Hud hud;
-    private float health = 10, maxHealth = 100;
+    private float health = 100, maxHealth = 100;
     private int money = 500;
     private float fuelLevel;
     private float fuelDeclineRate = 0.5f; // per sec
-
-
-    public void draw(SpriteBatch batch) {
-        if(dead){
-            TextureRegion textureRegion = Manager.explosionAnimation.getKeyFrame(gameTime);
-            batch.draw(textureRegion, x, y, textureRegion.getRegionWidth(), textureRegion.getRegionHeight());
-        }
-        else {
-            batch.draw(characterAnimation.getKeyFrame(gameTime), flip ? x + width : x, y, flip ? -width : width, height);
-        }
-        hud.draw(batch);
-    }
 
     private Character(){
         inventory = new Inventory();
@@ -67,6 +57,11 @@ public class Character extends Rectangle {
         hud = new Hud();
         // Set inventory of character
         ((InventoryScreen) ScreenType.Inventory.getScreen()).setInventory(inventory);
+
+        this.height = 35;
+        this.width = 80;
+
+        Spawn();
     }
 
     public Character(String[] textures, float animationSpeed, boolean left){
@@ -81,8 +76,28 @@ public class Character extends Rectangle {
         characterAnimation = new Animation<Texture>(animationSpeed, textureList);
         // Set mode to loop :D
         characterAnimation.setPlayMode(Animation.PlayMode.LOOP);
-
     }
+
+    private void Spawn(){
+        // Get map bounds;
+        Coordinate map_hor = Manager.map.getHorizontalMapBounds(), map_vert = Manager.map.getVerticalMapBounds();
+        this.y = map_vert.y;
+        this.x = map_hor.y / 2;
+        System.out.println("Current location is " + this.x + "/" + this.y);
+    }
+
+    public void draw(SpriteBatch batch) {
+        if(dead){
+            TextureRegion textureRegion = Manager.explosionAnimation.getKeyFrame(gameTime);
+            batch.draw(textureRegion, x, y, textureRegion.getRegionWidth(), textureRegion.getRegionHeight());
+            Utility.drawText(batch, Anchor.CENTER, 0,0,0,0,50,0, "GAME OVER\nHit ENTER to restart.");
+        }
+        else {
+            batch.draw(characterAnimation.getKeyFrame(gameTime), flip ? x + width : x, y, flip ? -width : width, height);
+        }
+        hud.draw(batch);
+    }
+
 
     private void accelerate(Direction direction) {
         // Determine multiplier
@@ -388,7 +403,7 @@ public class Character extends Rectangle {
         y = drillingStartPosition.y - height / 2 + delta_y * percentage;
     }
 
-    private Vector2 getCenter(){
+    public Vector2 getCenter(){
         return new Vector2(x + width / 2, y + height / 2);
     }
 
@@ -420,9 +435,11 @@ public class Character extends Rectangle {
 
     public void update() {
 
-
         // Update the gameTime
         gameTime += Gdx.graphics.getDeltaTime();
+
+        // Handle input
+        handleInput();
 
         if(dead) return;
 
@@ -432,8 +449,6 @@ public class Character extends Rectangle {
         // Figure out if we are entering a building
         checkBuildingOverlap();
 
-        // Handle input
-        handleInput();
 
         if(!isDrilling) {
             // Move
@@ -447,86 +462,117 @@ public class Character extends Rectangle {
         applyGravity();
     }
 
+    private void Respawn(){
+        dead = false;
+        health = maxHealth;
+        fuelLevel = getMaxFuelLevel();
+        currentMovementSpeed = Vector2.Zero;
+        System.out.println(currentMovementSpeed);
+        Spawn();
+    }
+
     private void handleInput(){
 
-        if(hud.isInMenu()){
-            if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
-                if(hud.getCurrentScreen().getScreen() instanceof ItemScreen) {
-                    ItemScreen itemScreen = (ItemScreen)hud.getCurrentScreen().getScreen();
-                    itemScreen.previousItem();
-                }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            if(hud.isInMenu()) {
+                hud.switchMenu(ScreenType.None);
             }
-            // If input pressed, go down in menu.
-            if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
-                if(hud.getCurrentScreen().getScreen() instanceof ItemScreen) {
-                    ItemScreen itemScreen = (ItemScreen)hud.getCurrentScreen().getScreen();
-                    itemScreen.nextItem();
-                }
-            }
-            if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
-                // If we are in an itemscreen
-                if(hud.getCurrentScreen().getScreen() instanceof ItemScreen){
-                    ItemScreen itemScreen = (ItemScreen)hud.getCurrentScreen().getScreen();
-                    UpgradeItem upgradeItem = itemScreen.getCurrentlySelectedItem();
-                    buyItem(upgradeItem);
-                }
-                // Buy fuel if enter is hit
-                else if(hud.getCurrentScreen().getScreen() instanceof TankStationMenu){
-                    buyFuel();
-                }
-                else if(hud.getCurrentScreen().getScreen() instanceof WareHouseMenu){
-                    WareHouseMenu currentMenu = (WareHouseMenu)hud.getCurrentScreen().getScreen();
-                    Resource selectedResource = currentMenu.getSelectedResource();
-                    if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)){
-                        // Sell all of this resource
-                        money += inventory.sellResource(selectedResource, true);
-                    }
-                    else if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
-                        money += inventory.sellResources();
-                    }
-                    else {
-                        // Sell 1 of this resource
-                        money += inventory.sellResource(selectedResource, false);
-                    }
-                }
-            }
-        }
-        else{
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                if(hud.getCurrentScreen() == ScreenType.None) {
-                    accelerate(Direction.Up);
-                }
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                if(hud.getCurrentScreen() == ScreenType.None) {
-                    accelerate(Direction.Down);
-                }
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                accelerate(Direction.Left);
-                flip = textureFacingRight;
-            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                accelerate(Direction.Right);
-                flip = !textureFacingRight;
+            else{
+                hud.switchMenu(ScreenType.MainMenu);
             }
         }
 
-        if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            // Dampen X movement!
-            dampenXMovement();
+        if(dead){
+            if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
+                Respawn();
+            }
         }
+        else {
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.I)){
-            hud.toggleMenu(ScreenType.Inventory);
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            hud.switchMenu(ScreenType.None);
+            if (hud.isInMenu()) {
+                if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+                    if (hud.getCurrentScreen().getScreen() instanceof ItemScreen) {
+                        ItemScreen itemScreen = (ItemScreen) hud.getCurrentScreen().getScreen();
+                        itemScreen.previousItem();
+                    }
+                }
+                // If input pressed, go down in menu.
+                if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+                    if (hud.getCurrentScreen().getScreen() instanceof ItemScreen) {
+                        ItemScreen itemScreen = (ItemScreen) hud.getCurrentScreen().getScreen();
+                        itemScreen.nextItem();
+                    }
+                }
+                if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                    // If we are in an itemscreen
+                    if (hud.getCurrentScreen().getScreen() instanceof ItemScreen) {
+                        ItemScreen itemScreen = (ItemScreen) hud.getCurrentScreen().getScreen();
+                        UpgradeItem upgradeItem = itemScreen.getCurrentlySelectedItem();
+                        buyItem(upgradeItem);
+                    }
+                    // Buy fuel if enter is hit
+                    else if (hud.getCurrentScreen().getScreen() instanceof TankStationMenu) {
+                        buyFuel();
+                    } else if (hud.getCurrentScreen().getScreen() instanceof WareHouseMenu) {
+                        WareHouseMenu currentMenu = (WareHouseMenu) hud.getCurrentScreen().getScreen();
+                        Resource selectedResource = currentMenu.getSelectedResource();
+                        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)) {
+                            // Sell all of this resource
+                            money += inventory.sellResource(selectedResource, true);
+                        } else if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
+                            money += inventory.sellResources();
+                        } else {
+                            // Sell 1 of this resource
+                            money += inventory.sellResource(selectedResource, false);
+                        }
+                    }
+                }
+            } else {
+                if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                    if (hud.getCurrentScreen() == ScreenType.None) {
+                        accelerate(Direction.Up);
+                    }
+                }
+                if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                    if (hud.getCurrentScreen() == ScreenType.None) {
+                        accelerate(Direction.Down);
+                    }
+                }
+
+                if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                    accelerate(Direction.Left);
+                    flip = textureFacingRight;
+                } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                    accelerate(Direction.Right);
+                    flip = !textureFacingRight;
+                }
+            }
+
+            if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                // Dampen X movement!
+                dampenXMovement();
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+                hud.toggleMenu(ScreenType.Inventory);
+            }
         }
     }
 
     public float getCurrentHeight(){
         return y - Manager.map.pixelHeight;
+    }
+
+    /**
+     *
+     * @return Height corrected for the height of the camera pos (actual 0-based).
+     */
+    public float getCorrectedHeight(){
+        return y - Manager.map.pixelHeight + height / 2;
+    }
+
+    public Vector2 getcurrentPos(){
+        return new Vector2(x , y - Manager.map.pixelHeight);
     }
 
     private void buyFuel(){

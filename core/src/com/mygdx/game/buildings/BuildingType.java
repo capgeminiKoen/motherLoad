@@ -1,8 +1,6 @@
 package com.mygdx.game.buildings;
 
-import com.mygdx.game.Coordinate;
-import com.mygdx.game.GUI.Anchor;
-import com.mygdx.game.GUI.InventoryScreen;
+import com.mygdx.game.Utility.Coordinate;
 import com.mygdx.game.GUI.ScreenType;
 
 public enum BuildingType {

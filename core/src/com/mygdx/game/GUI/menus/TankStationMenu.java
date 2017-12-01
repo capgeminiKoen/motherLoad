@@ -1,13 +1,10 @@
-package com.mygdx.game.GUI.buildingscreens;
+package com.mygdx.game.GUI.menus;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.Coordinate;
 import com.mygdx.game.GUI.Screen;
-import com.mygdx.game.Manager;
-
-import javax.xml.soap.Text;
+import com.mygdx.game.Utility.Manager;
 
 public class TankStationMenu extends Screen {
 

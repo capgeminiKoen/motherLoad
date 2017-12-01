@@ -1,50 +1,38 @@
 package com.mygdx.game.GUI.background;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.mygdx.game.Manager;
 
-/**
- * Background class -> Draws nice ass backgrounds.
- */
 public class Background {
+    BackgroundSet[] backgrounds;
 
-    private Color colors[] = new Color[4];
-    private float y, height;
-
-    public Background(float start, float end){
-        // make a rectangle
-        this.y = start;
-        this.height = end - start;
+    public Background(BackgroundSet[] backgrounds) {
+        this.backgrounds = backgrounds;
     }
 
-    public Background(float y, float height, Color color1, Color color2){
-        this(y, height);
-        colors[0] = colors[1] = color1;
-        colors[2] = colors[3] = color2;
-    }
+    public void draw(SpriteBatch spriteBatch){
 
-    public Background(float y, float height, Color color1, Color color2, Color color3, Color color4){
-        this(y, height);
-        colors[0] = color1;
-        colors[1] = color2;
-        colors[2] = color3;
-        colors[3] = color4;
-    }
+        // Draw the background
+        spriteBatch.end();
 
-    public void draw(ShapeRenderer shapeRenderer, float characterHeight){
-        // Height that we receive is the center of the screen. Check whether we have some overlap with the screen
-        // container.
-        float top = characterHeight + Manager.screenSize.y / 2;
-        float bottom = characterHeight - Manager.screenSize.y / 2;
+        // Create ShapeRenderer for all our backgroundGradients
+        ShapeRenderer shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        // If this background is outside the screen, return
-        if(top < y && bottom > y + characterHeight ){
-            return;
+        // Draw backgrounds
+        for(BackgroundSet backgroundSet : backgrounds){
+            backgroundSet.draw(shapeRenderer);
         }
 
-        // Draw gradient :)
-        shapeRenderer.rect(0, y - characterHeight + Manager.screenSize.y / 2, Manager.screenSize.x, height, colors[0], colors[1], colors[2], colors[3]);
+        // End shapeRenderer and begin spritebatch again
+        shapeRenderer.end();
+        spriteBatch.begin();
     }
 
+    public void update(){
+        for(BackgroundSet backgroundSet : backgrounds){
+            backgroundSet.update();
+        }
+    }
 }

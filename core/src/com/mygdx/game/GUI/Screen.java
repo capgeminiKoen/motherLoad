@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.mygdx.game.Manager;
+import com.mygdx.game.Utility.Manager;
 
-import static com.mygdx.game.Manager.font;
+import static com.mygdx.game.Utility.Manager.font;
 
 public abstract class Screen {
 
@@ -74,6 +74,10 @@ public abstract class Screen {
         this.right = right;
         this.top = top;
         this.down = down;
+    }
+
+    public void redrawRect(){
+        initializeRect();
     }
 
     // Initialize rectangle for a menu.
